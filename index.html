@@ -3,42 +3,169 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EPQ — Central</title>
+<title>EPQ · Central</title>
 <style>
-  * { box-sizing: border-box; }
-  body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; color: #222; }
-  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
-  h1 { font-size: 22px; margin-bottom: 6px; }
-  .sub { color: #666; font-size: 13px; margin-bottom: 22px; }
-  .group { margin-bottom: 22px; }
-  .group-title { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #777; margin-bottom: 8px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-  .card { background: #fff; border: 1px solid #e5e5e5; padding: 14px; border-radius: 6px; text-decoration: none; color: #222; display: block; }
-  .card:hover { border-color: #1e5fd6; }
-  .card .name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-  .card .desc { font-size: 12px; color: #666; }
-  .card .link { font-size: 11px; color: #1e5fd6; margin-top: 8px; word-break: break-all; }
-  .badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 12px; background: #f0f0f0; color: #666; margin-top: 6px; }
-  .badge-wip { background: #fff3cd; color: #856404; }
+  :root{
+    --bg-deep:#05080f;
+    --bg-panel:#0a1020;
+    --bg-card:rgba(16,24,48,0.62);
+    --border:rgba(80,160,255,0.14);
+    --border-strong:rgba(80,180,255,0.35);
+    --blue:#2f7fff;
+    --blue-bright:#6fb1ff;
+    --cyan:#5fe8f7;
+    --white:#f3f6fb;
+    --mute:#8a9bb8;
+    --mute-dim:#5c6a82;
+    --radius:14px;
+    --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--font-sans);
+    color:var(--white);
+    background:var(--bg-deep);
+    min-height:100vh;
+    padding:2.5rem 1.25rem 4rem;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:'';
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      linear-gradient(rgba(80,160,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(80,160,255,0.04) 1px, transparent 1px);
+    background-size:48px 48px;
+    mask-image:radial-gradient(ellipse 70% 55% at 50% 0%, #000 0%, transparent 72%);
+  }
+  .app{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+
+  /* HEADER */
+  .header{
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    padding:1.1rem 1.25rem;margin-bottom:2rem;
+    background:var(--bg-card);
+    backdrop-filter:blur(18px) saturate(140%);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);
+    border:1px solid var(--border);
+    border-radius:18px;
+    box-shadow:0 0 0 1px rgba(80,180,255,0.08), 0 20px 50px -20px rgba(80,160,255,0.25);
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:42px;height:42px;flex:0 0 auto}
+
+  .brand-text{}
+  .brand-title{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--mute);text-transform:uppercase}
+  .brand-title strong{display:block;color:var(--white);font-size:13px;letter-spacing:.12em;margin-top:2px}
+  .status-chip{
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;color:var(--green);
+    border:1px solid rgba(62,213,152,0.35);padding:6px 12px;border-radius:20px;
+    display:flex;align-items:center;gap:7px;text-transform:uppercase;
+    background:rgba(62,213,152,0.08);
+  }
+  .pulse-dot{
+    width:6px;height:6px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 8px var(--green);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(62,213,152,0.55)}
+    70%{box-shadow:0 0 0 7px rgba(62,213,152,0)}
+    100%{box-shadow:0 0 0 0 rgba(62,213,152,0)}
+  }
+
+  /* GROUPS */
+  .group{margin-bottom:2rem}
+  .group-title{
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;color:var(--mute-dim);
+    text-transform:uppercase;margin-bottom:10px;padding-left:4px;
+  }
+  .grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:14px}
+
+  /* CARDS */
+  .card{
+    background:var(--bg-card);
+    backdrop-filter:blur(14px) saturate(130%);
+    -webkit-backdrop-filter:blur(14px) saturate(130%);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:18px;text-decoration:none;color:var(--white);display:block;
+    position:relative;overflow:hidden;
+    transition:border-color .2s ease, box-shadow .2s ease, transform .15s ease;
+    box-shadow:0 1px 2px rgba(0,0,0,0.25), 0 10px 24px -18px rgba(80,160,255,0.18);
+  }
+  .card::before{
+    content:'';
+    position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg, transparent, rgba(80,180,255,0.35) 40%, transparent 80%);
+    opacity:0;transition:opacity .2s ease;
+  }
+  .card:hover{
+    border-color:var(--border-strong);
+    transform:translateY(-2px);
+    box-shadow:0 1px 2px rgba(0,0,0,0.3), 0 18px 36px -18px rgba(80,160,255,0.35), 0 0 0 1px rgba(80,180,255,0.12) inset;
+  }
+  .card:hover::before{opacity:1}
+  .card .icon{
+    width:32px;height:32px;border-radius:8px;
+    background:linear-gradient(135deg, rgba(47,127,255,0.18), rgba(95,232,247,0.18));
+    border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--cyan);font-size:16px;margin-bottom:12px;
+  }
+  .card .name{font-weight:700;font-size:14px;margin-bottom:4px;font-family:var(--font-sans)}
+  .card .desc{font-size:12.5px;color:var(--mute);line-height:1.5}
+  .card .link{font-size:11px;color:var(--blue-bright);margin-top:10px;font-family:var(--font-mono);word-break:break-all;opacity:.9}
+  .badge{
+    display:inline-block;font-size:10px;padding:3px 10px;border-radius:12px;
+    background:rgba(217,138,10,0.12);color:#e2a83f;
+    border:1px solid rgba(217,138,10,0.35);margin-top:8px;
+    font-family:var(--font-mono);letter-spacing:.04em;text-transform:uppercase;
+  }
+
+  @media (max-width:520px){
+    .grid{grid-template-columns:1fr}
+    body{padding:1.25rem .75rem 3rem}
+    .header{flex-direction:column;align-items:flex-start}
+  }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>EPQ · Central</h1>
-  <div class="sub">Acesso rápido por área</div>
+<div class="app">
+
+  <div class="header">
+    <div class="brand">
+      <!-- EPQ Logo SVG -->
+      <svg class="logo" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="EPQ">
+        <rect width="120" height="120" rx="18" fill="#0a1228"/>
+        <path d="M28 82V28h18.5c14.5 0 24 7.5 24 21.5S61 71 46.5 71H36v11h10.5c4.5 0 8.5-2 8.5-7.5s-4-7.5-8.5-7.5H36V49h11c5.5 0 9 3 9 8s-3.5 8-9 8H36v15H28z" fill="#ffffff"/>
+        <path d="M64 82V28h37v12H79v7h20v12H79v11h22v12H64z" fill="#ffffff"/>
+        <path d="M95 82V28h16.5c7 0 11.5 4.5 11.5 11.5S119 51 112 51h-4v31h-13z" fill="#ffffff"/>
+        <path d="M78 56.5c0-4.5 3.5-8.5 9-8.5h4v-5h5c5.5 0 9 3.5 9 8.5s-3.5 8.5-9 8.5h-4v5h-5c-5.5 0-9-3.5-9-8.5z" fill="#5fe8f7"/>
+      </svg>
+      <div class="brand-text">
+        <div class="brand-title">Central <strong>EPQ</strong></div>
+      </div>
+    </div>
+    <div class="status-chip"><span class="pulse-dot"></span>Sistema online</div>
+  </div>
 
   <div class="group">
     <div class="group-title">Atendimento & Comercial</div>
     <div class="grid">
       <a class="card" href="https://flavio-guedes.github.io/epq/playbookatendimento.html">
+        <div class="icon">◈</div>
         <div class="name">Playbook de Atendimento</div>
         <div class="desc">Protocolos, scripts, objeções e follow-up</div>
-        <div class="link">flavio-guedes.github.io/epq/playbookatendimento.html</div>
+        <div class="link">playbookatendimento.html</div>
       </a>
       <a class="card" href="https://flavio-guedes.github.io/epq/fluxocomercial.html">
+        <div class="icon">◎</div>
         <div class="name">Fluxo Comercial</div>
         <div class="desc">Jornada do lead à matrícula</div>
-        <div class="link">flavio-guedes.github.io/epq/fluxocomercial.html</div>
+        <div class="link">fluxocomercial.html</div>
       </a>
     </div>
   </div>
@@ -47,19 +174,22 @@
     <div class="group-title">Marketing</div>
     <div class="grid">
       <a class="card" href="https://flavio-guedes.github.io/epq/playbookmkt.html">
+        <div class="icon">✦</div>
         <div class="name">Playbook Marketing</div>
         <div class="desc">Diretrizes, tom de voz e conteúdo</div>
-        <div class="link">flavio-guedes.github.io/epq/playbookmkt.html</div>
+        <div class="link">playbookmkt.html</div>
       </a>
       <a class="card" href="https://flavio-guedes.github.io/epq/planoads.html">
+        <div class="icon">◉</div>
         <div class="name">Plano de Ads</div>
         <div class="desc">Campanhas, criativos e métricas</div>
-        <div class="link">flavio-guedes.github.io/epq/planoads.html</div>
+        <div class="link">planoads.html</div>
       </a>
       <a class="card" href="https://flavio-guedes.github.io/epq/Checkup.html">
+        <div class="icon">⌁</div>
         <div class="name">Checkup</div>
         <div class="desc">Isca / diagnóstico rápido da operação</div>
-        <div class="link">flavio-guedes.github.io/epq/Checkup.html</div>
+        <div class="link">Checkup.html</div>
         <span class="badge">Isca</span>
       </a>
     </div>
@@ -69,9 +199,10 @@
     <div class="group-title">Pedagógico</div>
     <div class="grid">
       <a class="card" href="#">
+        <div class="icon">◫</div>
         <div class="name">Playbook Pedagógico</div>
         <div class="desc">Motor de alocação inteligente, termos militares e gestão de turmas</div>
-        <span class="badge badge-wip">Em construção</span>
+        <span class="badge">Em construção</span>
       </a>
     </div>
   </div>
@@ -80,12 +211,14 @@
     <div class="group-title">Operação & Qualidade</div>
     <div class="grid">
       <a class="card" href="https://flavio-guedes.github.io/epq/auditoria.html">
+        <div class="icon">⬡</div>
         <div class="name">Auditoria</div>
         <div class="desc">Checklist e verificação operacional</div>
-        <div class="link">flavio-guedes.github.io/epq/auditoria.html</div>
+        <div class="link">auditoria.html</div>
       </a>
     </div>
   </div>
+
 </div>
 </body>
 </html>
