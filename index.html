@@ -8,79 +8,107 @@
   * { box-sizing: border-box; }
   body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; color: #222; }
   .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
-  h1 { font-size: 22px; margin-bottom: 16px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
-  .card { background: #ffffff; border-radius: 10px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-decoration: none; color: inherit; display: block; }
-  .card h2 { font-size: 15px; margin: 0 0 6px; }
-  .card p { font-size: 12px; color: #555; margin: 0; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; background: #e5e7eb; color: #222; margin-top: 8px; }
+  h1 { font-size: 22px; margin-bottom: 6px; }
+  .sub { color: #666; font-size: 13px; margin-bottom: 22px; }
+  .group { margin-bottom: 22px; }
+  .group-title { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #777; margin-bottom: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .card { background: #fff; border: 1px solid #e5e5e5; padding: 14px; border-radius: 6px; text-decoration: none; color: #222; display: block; }
+  .card:hover { border-color: #1e5fd6; }
+  .card .name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .card .desc { font-size: 12px; color: #666; }
+  .card .link { font-size: 11px; color: #1e5fd6; margin-top: 8px; word-break: break-all; }
 </style>
 </head>
 <body>
-  <div class="container">
-    <h1>EPQ — Central</h1>
+<div class="container">
+  <h1>EPQ · Central</h1>
+  <div class="sub">Acesso rápido por área</div>
+
+  <div class="group">
+    <div class="group-title">Atendimento & Comercial</div>
     <div class="grid">
-      <a class="card" href="https://flavio-guedes.github.io/epq/Checkup.html" target="_blank">
-        <h2>Checkup</h2>
-        <p>Painel de checkup.</p>
-        <span class="badge">HTML</span>
+      <a class="card" href="https://flavio-guedes.github.io/epq/playbookatendimento.html">
+        <div class="name">Playbook de Atendimento</div>
+        <div class="desc">Protocolos, scripts, objeções e follow-up</div>
+        <div class="link">flavio-guedes.github.io/epq/playbookatendimento.html</div>
       </a>
-      <a class="card" href="https://flavio-guedes.github.io/epq/auditoria.html" target="_blank">
-        <h2>Auditoria</h2>
-        <p>Painel de auditoria.</p>
-        <span class="badge">HTML</span>
+      <a class="card" href="https://flavio-guedes.github.io/sistema-prospeccao/">
+        <div class="name">Prospecção</div>
+        <div class="desc">Radar, mensagens, pipeline e I.A. aplicada</div>
+        <div class="link">flavio-guedes.github.io/sistema-prospeccao/</div>
       </a>
-      <a class="card" href="https://flavio-guedes.github.io/epq/fluxocomercial.html" target="_blank">
-        <h2>Fluxo Comercial</h2>
-        <p>Fluxo comercial operacional.</p>
-        <span class="badge">HTML</span>
-      </a>
-      <a class="card" href="https://flavio-guedes.github.io/epq/planoads.html" target="_blank">
-        <h2>Plano de Ads</h2>
-        <p>Plano e métricas de anúncios.</p>
-        <span class="badge">HTML</span>
-      </a>
-      <a class="card" href="https://flavio-guedes.github.io/epq/playbookatendimento.html" target="_blank">
-        <h2>Playbook de Atendimento</h2>
-        <p>Versão 6 — atendimento e gestão pedagógica.</p>
-        <span class="badge">HTML</span>
-      </a>
-      <a class="card" href="https://flavio-guedes.github.io/epq/playbookmkt.html" target="_blank">
-        <h2>Playbook Marketing</h2>
-        <p>Playbook de marketing.</p>
-        <span class="badge">HTML</span>
-      </a>
-      <a class="card" href="https://flavio-guedes.github.io/epq/publico.html" target="_blank">
-        <h2>Público</h2>
-        <p>Segmentação de público.</p>
-        <span class="badge">HTML</span>
-      </a>
-      <a class="card" href="https://flavio-guedes.github.io/prospects/" target="_blank">
-        <h2>Prospecção</h2>
-        <p>Pipeline e CRM de prospecção.</p>
-        <span class="badge">HTML</span>
-      </a>
-      <a class="card" href="https://flavio-guedes.github.io/pessoas/" target="_blank">
-        <h2>Pessoas</h2>
-        <p>Gestão de pessoas, alunos, professores e responsáveis.</p>
-        <span class="badge">HTML</span>
-      </a>
-      <a class="card" href="https://flavio-guedes.github.io/epq-projetos/" target="_blank">
-        <h2>Projetos</h2>
-        <p>Pipeline de projetos EPQ.</p>
-        <span class="badge">HTML</span>
-      </a>
-      <a class="card" href="https://github.com/flavio-guedes/epq" target="_blank">
-        <h2>EPQ — GitHub</h2>
-        <p>Repositório base.</p>
-        <span class="badge">GitHub</span>
-      </a>
-      <a class="card" href="https://github.com/flavio-guedes/agentes" target="_blank">
-        <h2>Agentes</h2>
-        <p>Docs de agentes, skills e arquitetura.</p>
-        <span class="badge">GitHub</span>
+      <a class="card" href="https://flavio-guedes.github.io/epq/fluxocomercial.html">
+        <div class="name">Fluxo Comercial</div>
+        <div class="desc">Jornada do lead à matrícula</div>
+        <div class="link">flavio-guedes.github.io/epq/fluxocomercial.html</div>
       </a>
     </div>
   </div>
+
+  <div class="group">
+    <div class="group-title">Marketing</div>
+    <div class="grid">
+      <a class="card" href="https://flavio-guedes.github.io/epq/playbookmkt.html">
+        <div class="name">Playbook Marketing</div>
+        <div class="desc">Diretrizes, tom de voz e conteúdo</div>
+        <div class="link">flavio-guedes.github.io/epq/playbookmkt.html</div>
+      </a>
+      <a class="card" href="https://flavio-guedes.github.io/epq/publico.html">
+        <div class="name">Público</div>
+        <div class="desc">Público-alvo, personas e segmentos</div>
+        <div class="link">flavio-guedes.github.io/epq/publico.html</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="group-title">Pedagógico</div>
+    <div class="grid">
+      <a class="card" href="https://flavio-guedes.github.io/epq/playbookatendimento.html">
+        <div class="name">Playbook Pedagógico</div>
+        <div class="desc">Termos militares, gestão pedagógica, cursos e turmas</div>
+        <div class="link">flavio-guedes.github.io/epq/playbookatendimento.html</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="group-title">Operação & Qualidade</div>
+    <div class="grid">
+      <a class="card" href="https://flavio-guedes.github.io/epq/auditoria.html">
+        <div class="name">Auditoria</div>
+        <div class="desc">Checklist e verificação operacional</div>
+        <div class="link">flavio-guedes.github.io/epq/auditoria.html</div>
+      </a>
+      <a class="card" href="https://flavio-guedes.github.io/epq/Checkup.html">
+        <div class="name">Checkup</div>
+        <div class="desc">Diagnóstico rápido da operação</div>
+        <div class="link">flavio-guedes.github.io/epq/Checkup.html</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="group-title">Ferramentas & Automação</div>
+    <div class="grid">
+      <a class="card" href="https://flavio-guedes.github.io/epq/planoads.html">
+        <div class="name">Plano de Ads</div>
+        <div class="desc">Campanhas, criativos e métricas</div>
+        <div class="link">flavio-guedes.github.io/epq/planoads.html</div>
+      </a>
+      <a class="card" href="https://github.com/flavio-guedes/agentes">
+        <div class="name">Agentes</div>
+        <div class="desc">Skills, arquitetura e documentação</div>
+        <div class="link">github.com/flavio-guedes/agentes</div>
+      </a>
+      <a class="card" href="https://flavio-guedes.github.io/prospects/">
+        <div class="name">Prospecção</div>
+        <div class="desc">Painel de prospecção e status</div>
+        <div class="link">flavio-guedes.github.io/prospects/</div>
+      </a>
+    </div>
+  </div>
+</div>
 </body>
 </html>
