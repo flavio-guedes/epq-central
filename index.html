@@ -77,10 +77,17 @@
   }
 
   /* GROUPS */
-  .group{margin-bottom:2rem}
+  .group{margin-bottom:2.5rem}
   .group-title{
     font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;color:var(--mute-dim);
-    text-transform:uppercase;margin-bottom:10px;padding-left:4px;
+    text-transform:uppercase;margin-bottom:12px;padding-left:4px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .group-divider{
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--border-strong), transparent);
+    margin: 2.5rem 0 2.5rem 0;
+    opacity:.6;
   }
   .grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:14px}
 
@@ -147,7 +154,7 @@
   </div>
 
   <div class="group">
-    <div class="group-title">Atendimento & Comercial</div>
+    <div class="group-title">🎯 Atendimento & Comercial</div>
     <div class="grid">
       <a class="card" href="https://flavio-guedes.github.io/epq/playbookatendimento.html">
         <div class="icon">◈</div>
@@ -164,8 +171,10 @@
     </div>
   </div>
 
+  <div class="group-divider"></div>
+
   <div class="group">
-    <div class="group-title">Marketing</div>
+    <div class="group-title">📣 Marketing</div>
     <div class="grid">
       <a class="card" href="https://flavio-guedes.github.io/epq/playbookmkt.html">
         <div class="icon">✦</div>
@@ -189,20 +198,24 @@
     </div>
   </div>
 
+  <div class="group-divider"></div>
+
   <div class="group">
-    <div class="group-title">Pedagógico</div>
+    <div class="group-title">🎓 Pedagógico</div>
     <div class="grid">
-      <a class="card" href="#">
+      <a class="card" href="https://flavio-guedes.github.io/pedagogico/">
         <div class="icon">◫</div>
-        <div class="name">Playbook Pedagógico</div>
-        <div class="desc">Motor de alocação inteligente, termos militares e gestão de turmas</div>
-        <span class="badge">Em construção</span>
+        <div class="name">Motor de Alocação</div>
+        <div class="desc">Gestão de turmas, professores e salas</div>
+        <div class="link">pedagogico</div>
       </a>
     </div>
   </div>
 
+  <div class="group-divider"></div>
+
   <div class="group">
-    <div class="group-title">Operação & Qualidade</div>
+    <div class="group-title">⚙️ Operação & Qualidade</div>
     <div class="grid">
       <a class="card" href="https://flavio-guedes.github.io/epq/auditoria.html">
         <div class="icon">⬡</div>
