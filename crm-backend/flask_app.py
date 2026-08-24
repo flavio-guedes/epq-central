@@ -477,4 +477,9 @@ def health():
     return jsonify({'status': 'ok'})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+  try:
+      from render_init import main as _render_init_main
+      _render_init_main()
+  except Exception:
+      pass
+  app.run(host='0.0.0.0', port=5000)
