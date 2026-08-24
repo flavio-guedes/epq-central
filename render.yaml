@@ -14,9 +14,6 @@ services:
         value: sqlite:///./crm.db
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: "60"
-      - key: FIRST_SUPERUSER
-        value: flavio
-      - key: FIRST_SUPERUSER_PASSWORD
-        value: EPQ@Admin#2026!
+    # Usuários iniciais serão criados via render_init.py após deploy.
+    # Senhas temporárias devem ser alteradas no primeiro login.
     # Aviso: Render Free não garante persistência do SQLite entre deploys/desligamentos.
-    # Para produção, use plano pago + disco persistente ou migre para PostgreSQL.
