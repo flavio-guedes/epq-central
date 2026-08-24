@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EPQ — Case Educação</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f5f5;
+    color: #222;
+    padding: 24px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: 22px; margin-bottom: 6px; }
+  .sub { color: #666; font-size: 13px; margin-bottom: 22px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 16px;
+    text-decoration: none;
+    color: #222;
+    display: block;
+    transition: transform .08s ease, border-color .15s ease;
+  }
+  .card:hover { border-color: #1e5fd6; transform: translateY(-1px); }
+  .card .name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .card .desc { font-size: 12px; color: #666; }
+  .card .link { font-size: 11px; color: #1e5fd6; margin-top: 10px; word-break: break-all; }
+  .badge {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 11px;
+    background: #eef2ff;
+    color: #1e3a8a;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid #c7d2fe;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>EPQ · Case Educação</h1>
+  <div class="sub">Página unificada: atendimento, comercial e marketing, com auditoria no portfolio.</div>
+
+  <div class="grid">
+    <a class="card" href="https://flavio-guedes.github.io/epq/playbookatendimento.html">
+      <div class="name">Playbook de Atendimento</div>
+      <div class="desc">Protocolos, scripts, objeções e follow-up</div>
+      <div class="link">flavio-guedes.github.io/epq/playbookatendimento.html</div>
+      <span class="badge">Atendimento</span>
+    </a>
+
+    <a class="card" href="https://flavio-guedes.github.io/epq/fluxocomercial.html">
+      <div class="name">Fluxo Comercial</div>
+      <div class="desc">Jornada do lead à matrícula</div>
+      <div class="link">flavio-guedes.github.io/epq/fluxocomercial.html</div>
+      <span class="badge">Comercial</span>
+    </a>
+
+    <a class="card" href="https://flavio-guedes.github.io/epq/playbookmkt.html">
+      <div class="name">Playbook Marketing</div>
+      <div class="desc">Diretrizes, tom de voz e conteúdo</div>
+      <div class="link">flavio-guedes.github.io/epq/playbookmkt.html</div>
+      <span class="badge">Marketing</span>
+    </a>
+
+    <a class="card" href="https://flavio-guedes.github.io/portfolio/case_educacao.html">
+      <div class="name">Case Educação — Auditoria</div>
+      <div class="desc">Registro no portfolio com verificação da implementação</div>
+      <div class="link">flavio-guedes.github.io/portfolio/case_educacao.html</div>
+      <span class="badge">Portfolio</span>
+    </a>
+  </div>
+</div>
+</body>
+</html>
