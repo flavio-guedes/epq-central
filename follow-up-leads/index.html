@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EPQ · Follow-up de Leads</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background:
+      radial-gradient(1200px 700px at 10% -10%, rgba(56,189,248,0.12), transparent 60%),
+      radial-gradient(1000px 600px at 110% 10%, rgba(99,102,241,0.12), transparent 55%),
+      linear-gradient(180deg, #0b1220 0%, #0f1b33 100%);
+    color: #e6f3ff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .noise {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.07; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 220px 220px;
+  }
+  #app { position: relative; z-index: 1; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+  header {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand img { height: 36px; width: 36px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.08); padding: 4px; }
+  h1 { font-size: 20px; letter-spacing: 0.2px; color: #ffffff; }
+  .sub { color: #7d9cbd; font-size: 13px; margin-top: 2px; }
+
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    border: 1px solid rgba(255,255,255,0.18); color: #e6f3ff; background: rgba(255,255,255,0.08); padding: 9px 12px; border-radius: 12px; font-size: 13px; cursor: pointer;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: background .15s ease, border-color .15s ease;
+  }
+  .btn:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.32); }
+  .btn.primary { background: rgba(34,211,238,0.18); border-color: rgba(34,211,238,0.45); color: #cffafe; }
+  .btn.primary:hover { background: rgba(34,211,238,0.28); border-color: rgba(34,211,238,0.65); }
+
+  .panel {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; padding: 18px; margin-bottom: 18px;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
+
+  .kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 18px; }
+  .kpi { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 14px; }
+  .kpi .num { font-size: 22px; font-weight: 700; color: #ffffff; }
+  .kpi .label { font-size: 11px; color: #7d9cbd; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 4px; }
+
+  .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .search {
+    flex: 1 1 260px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); color: #e6f3ff; font-size: 13px; min-width: 0;
+  }
+  .filter-select {
+    padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); color: #e6f3ff; font-size: 13px;
+  }
+  option { background: #0f1b33; color: #e6f3ff; }
+
+  .funnel { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 18px; }
+  .stage {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 12px; cursor: pointer; transition: border-color .15s ease, transform .15s ease;
+  }
+  .stage:hover { border-color: rgba(34,211,238,0.5); transform: translateY(-2px); }
+  .stage .name { font-size: 11px; color: #7d9cbd; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 6px; }
+  .stage .count { font-size: 20px; font-weight: 700; color: #ffffff; }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 900px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: #7d9cbd; padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+  td { font-size: 13px; color: #e6f3ff; padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); vertical-align: middle; }
+  tr:hover td { background: rgba(255,255,255,0.04); }
+  .badge {
+    display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid transparent;
+  }
+  .badge.vaga { background: rgba(59,130,246,.15); color: #e8f1ff; border-color: rgba(59,130,246,.35); }
+  .badge.publicacao { background: rgba(16,185,129,.18); color: #ffffff; border-color: rgba(16,185,129,.45); }
+  .badge.hot { background: rgba(239,68,68,.15); color: #ffd8d4; border-color: rgba(239,68,68,.35); }
+
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 24px;
+  }
+  .modal {
+    background: linear-gradient(180deg, rgba(15,23,42,.98), rgba(17,27,45,.95)); border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; padding: 18px; width: 100%; max-width: 860px; max-height: 90vh; overflow: auto;
+  }
+  .modal h3 { font-size: 16px; color: #ffffff; margin-bottom: 8px; }
+  .form { display: grid; gap: 10px; }
+  .form label { font-size: 12px; color: #7d9cbd; }
+  .form input, .form select, .form textarea {
+    padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); color: #e6f3ff; font-size: 13px;
+  }
+  .form textarea { min-height: 80px; resize: vertical; }
+  .row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  .timeline { display: grid; gap: 10px; margin-top: 12px; }
+  .timeline-item {
+    display: flex; gap: 12px; align-items: flex-start; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10);
+  }
+  .timeline-meta { font-size: 12px; color: #7d9cbd; min-width: 120px; }
+  .timeline-body { font-size: 13px; color: #e6f3ff; }
+
+  .agenda { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+  .agenda-col { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); border-radius: 14px; padding: 12px; }
+  .agenda-title { font-size: 12px; color: #7d9cbd; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 10px; }
+  .agenda-item { padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.04); margin-bottom: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.10); }
+  .agenda-item:hover { border-color: rgba(34,211,238,0.4); }
+  .agenda-item .name { font-size: 13px; color: #ffffff; font-weight: 500; }
+  .agenda-item .meta { font-size: 12px; color: #7d9cbd; margin-top: 4px; }
+
+  @media (max-width: 1024px) {
+    .kpis { grid-template-columns: repeat(3, 1fr); }
+    .funnel { grid-template-columns: repeat(4, 1fr); }
+    .agenda { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 760px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .funnel { grid-template-columns: repeat(3, 1fr); }
+    .row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div id="app" class="container">
+  <header>
+    <div class="brand">
+      <img src="https://flavio-guedes.github.io/epq-central/logo.jpg" alt="EPQ" />
+      <div>
+        <h1>Follow-up de Leads</h1>
+        <div class="sub">Painel comercial EPQ</div>
+      </div>
+    </div>
+    <div class="actions">
+      <input class="search" v-model="search" placeholder="Buscar nome, WhatsApp ou curso..." />
+      <select class="filter-select" v-model="filterStage">
+        <option value="">Todos os estágios</option>
+        <option v-for="s in stages" :key="s" :value="s">{{ s }}</option>
+      </select>
+      <select class="filter-select" v-model="filterTemp">
+        <option value="">Todas as temperaturas</option>
+        <option>Frio</option>
+        <option>Morno</option>
+        <option>Quente</option>
+      </select>
+      <button class="btn primary" @click="openCreate()">+ Novo Lead</button>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="kpis">
+      <div class="kpi"><div class="num">{{ kpis.total }}</div><div class="label">Total</div></div>
+      <div class="kpi"><div class="num">{{ kpis.new }}</div><div class="label">Novos</div></div>
+      <div class="kpi"><div class="num">{{ kpis.today }}</div><div class="label">Hoje</div></div>
+      <div class="kpi"><div class="num" style="color:#f87171">{{ kpis.late }}</div><div class="label">Atrasados</div></div>
+      <div class="kpi"><div class="num" style="color:#fbbf24">{{ kpis.hot }}</div><div class="label">Quentes</div></div>
+      <div class="kpi"><div class="num" style="color:#34d399">{{ kpis.converted }}</div><div class="label">Convertidos</div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="funnel">
+      <div class="stage" v-for="stage in stages" :key="stage" @click="filterStage = stage">
+        <div class="name">{{ stage }}</div>
+        <div class="count">{{ byStage(stage) }}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>WhatsApp</th>
+            <th>Curso/Turma</th>
+            <th>Origem</th>
+            <th>Entrada</th>
+            <th>Último contato</th>
+            <th>Próximo follow-up</th>
+            <th>Temperatura</th>
+            <th>Etapa</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="lead in filtered" :key="lead.id">
+            <td><a href="#" @click.prevent="openLead(lead)" style="color:#7dd3fc;text-decoration:none;">{{ lead.name }}</a></td>
+            <td><a :href="'https://wa.me/' + lead.whatsapp" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;">{{ lead.whatsapp }}</a></td>
+            <td>{{ lead.course }}</td>
+            <td>{{ lead.source }}</td>
+            <td>{{ formatDate(lead.createdAt) }}</td>
+            <td>{{ formatDate(lead.lastContact) }}</td>
+            <td>{{ formatDate(lead.nextFollowUp) }}</td>
+            <td><span class="badge" :class="lead.temperature.toLowerCase()">{{ lead.temperature }}</span></td>
+            <td>{{ lead.stage }}</td>
+            <td>{{ lead.status }}</td>
+            <td>
+              <button class="btn" @click="openLead(lead)">Abrir</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="agenda">
+      <div class="agenda-col">
+        <div class="agenda-title">Atrasados</div>
+        <div class="agenda-item" v-for="lead in agenda.late" :key="lead.id" @click="openLead(lead)">
+          <div class="name">{{ lead.name }}</div>
+          <div class="meta">{{ lead.course }} · {{ formatDate(lead.nextFollowUp) }}</div>
+        </div>
+        <div v-if="!agenda.late.length" style="color:#7d9cbd;font-size:13px;">Nenhum</div>
+      </div>
+      <div class="agenda-col">
+        <div class="agenda-title">Hoje</div>
+        <div class="agenda-item" v-for="lead in agenda.today" :key="lead.id" @click="openLead(lead)">
+          <div class="name">{{ lead.name }}</div>
+          <div class="meta">{{ lead.course }} · {{ formatDate(lead.nextFollowUp) }}</div>
+        </div>
+        <div v-if="!agenda.today.length" style="color:#7d9cbd;font-size:13px;">Nenhum</div>
+      </div>
+      <div class="agenda-col">
+        <div class="agenda-title">Próximos</div>
+        <div class="agenda-item" v-for="lead in agenda.upcoming" :key="lead.id" @click="openLead(lead)">
+          <div class="name">{{ lead.name }}</div>
+          <div class="meta">{{ lead.course }} · {{ formatDate(lead.nextFollowUp) }}</div>
+        </div>
+        <div v-if="!agenda.upcoming.length" style="color:#7d9cbd;font-size:13px;">Nenhum</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lead modal -->
+  <div class="modal-backdrop" v-if="leadModal" @click.self="closeLead">
+    <div class="modal" v-if="currentLead">
+      <h3>{{ currentLead.name }}</h3>
+      <div class="row">
+        <div><label>Telefone</label><input v-model="currentLead.phone" /></div>
+        <div><label>E-mail</label><input v-model="currentLead.email" /></div>
+        <div><label>Curso/Turma</label><input v-model="currentLead.course" /></div>
+        <div><label>Origem</label><input v-model="currentLead.source" /></div>
+        <div><label>Estágio</label>
+          <select v-model="currentLead.stage">
+            <option v-for="s in stages" :key="s" :value="s">{{ s }}</option>
+          </select>
+        </div>
+        <div><label>Temperatura</label>
+          <select v-model="currentLead.temperature">
+            <option>Frio</option><option>Morno</option><option>Quente</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div><label>Próximo follow-up</label><input type="date" v-model="currentLead.nextFollowUp" /></div>
+        <div><label>Hora</label><input type="time" v-model="currentLead.nextTime" /></div>
+        <div><label>Tipo de ação</label>
+          <select v-model="currentLead.nextType">
+            <option>WhatsApp</option><option>Ligação</option><option>Visita</option><option>Proposta</option><option>Follow-up</option>
+          </select>
+        </div>
+      </div>
+      <label style="margin-top:10px;display:block;">Observação</label>
+      <textarea v-model="currentLead.nextNote" placeholder="Descreva a próxima ação..."></textarea>
+
+      <div class="actions" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn primary" @click="saveLead()">Salvar</button>
+        <button class="btn" @click="logContact('WhatsApp')">Registrar WhatsApp</button>
+        <button class="btn" @click="logContact('Ligação')">Registrar Ligação</button>
+        <button class="btn" @click="logContact('Follow-up')">Registrar Follow-up</button>
+        <button class="btn" @click="advanceStage()">Avançar etapa</button>
+        <button class="btn" @click="closeLead">Fechar</button>
+      </div>
+
+      <div style="margin-top:18px;">
+        <div style="font-size:12px;color:#7d9cbd;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:8px;">Histórico</div>
+        <div class="timeline">
+          <div class="timeline-item" v-for="item in currentLead.history.slice().reverse()" :key="item.id">
+            <div class="timeline-meta">{{ formatDate(item.date) }} · {{ item.type }}</div>
+            <div class="timeline-body">{{ item.note }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create modal -->
+  <div class="modal-backdrop" v-if="createModal" @click.self="closeCreate">
+    <div class="modal">
+      <h3>Novo Lead</h3>
+      <div class="form">
+        <div class="row">
+          <div><label>Nome</label><input v-model="newLead.name" /></div>
+          <div><label>WhatsApp</label><input v-model="newLead.whatsapp" /></div>
+        </div>
+        <div class="row">
+          <div><label>Curso/Turma</label><input v-model="newLead.course" /></div>
+          <div><label>Origem</label><input v-model="newLead.source" /></div>
+        </div>
+        <div class="row">
+          <div><label>Estágio</label>
+            <select v-model="newLead.stage">
+              <option v-for="s in stages" :key="s" :value="s">{{ s }}</option>
+            </select>
+          </div>
+          <div><label>Temperatura</label>
+            <select v-model="newLead.temperature">
+              <option>Frio</option><option>Morno</option><option>Quente</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div><label>Próximo follow-up</label><input type="date" v-model="newLead.nextFollowUp" /></div>
+          <div><label>Hora</label><input type="time" v-model="newLead.nextTime" /></div>
+        </div>
+        <label>Observação inicial</label>
+        <textarea v-model="newLead.nextNote"></textarea>
+      </div>
+      <div class="actions" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn primary" @click="createLead()">Criar</button>
+        <button class="btn" @click="closeCreate">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+  const { createApp, ref, computed, reactive } = Vue;
+
+  const STORAGE_KEY = 'epq_leads_v1';
+  const stages = ['Novo','Primeiro contato','Em conversa','Interessado','Negociação','Matriculado','Perdido'];
+
+  function today(){ return new Date().toISOString().slice(0,10); }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+  function load(){ try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; } catch { return []; } }
+  function save(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+  const seed = () => [
+    { id: uid(), name: 'Ronan Pontes', whatsapp: '5521976543210', course: 'PM — turma sábado', source: 'WhatsApp', createdAt: today(), lastContact: today(), nextFollowUp: today(), nextTime: '09:00', nextType: 'WhatsApp', nextNote: 'Confirmar turma da PM em Nilópolis', temperature: 'Quente', stage: 'Interessado', status: 'ativo', history: [{id: uid(), date: today(), type: 'Lead criado', note: 'Contato inicial via WhatsApp'}] },
+    { id: uid(), name: 'Ana Souza', whatsapp: '5521988776655', course: 'Marketing', source: 'Instagram', createdAt: today(), lastContact: today(), nextFollowUp: today(), nextTime: '14:00', nextType: 'Follow-up', nextNote: 'Enviar grade e valores', temperature: 'Morno', stage: 'Primeiro contato', status: 'ativo', history: [{id: uid(), date: today(), type: 'Lead criado', note: 'Chegou pelo perfil @epq.marketing'}] },
+    { id: uid(), name: 'Carlos Lima', whatsapp: '5521911223344', course: 'Design', source: 'Indicação', createdAt: today(), lastContact: today(), nextFollowUp: today(), nextTime: '16:00', nextType: 'Ligação', nextNote: 'Ligar para apresentar proposta', temperature: 'Frio', stage: 'Novo', status: 'ativo', history: [{id: uid(), date: today(), type: 'Lead criado', note: 'Indicação de um amigo'}] },
+    { id: uid(), name: 'Fernanda Dias', whatsapp: '5521933445566', course: 'Produto', source: 'LinkedIn', createdAt: today(), lastContact: today(), nextFollowUp: today(), nextTime: '11:00', nextType: 'WhatsApp', nextNote: 'Enviar case de produto', temperature: 'Quente', stage: 'Negociação', status: 'ativo', history: [{id: uid(), date: today(), type: 'Lead criado', note: 'Lead inbound via publicação'}] },
+    { id: uid(), name: 'Lucas Martins', whatsapp: '5521955667788', course: 'Conteúdo', source: 'Facebook', createdAt: today(), lastContact: today(), nextFollowUp: today(), nextTime: '19:00', nextType: 'Proposta', nextNote: 'Enviar proposta comercial', temperature: 'Morno', stage: 'Em conversa', status: 'ativo', history: [{id: uid(), date: today(), type: 'Lead criado', note: 'Lead do post do evento'}] },
+  ];
+
+  createApp({
+    setup() {
+      const leads = ref(load().length ? load() : seed());
+      const search = ref('');
+      const filterStage = ref('');
+      const filterTemp = ref('');
+      const leadModal = ref(false);
+      const createModal = ref(false);
+      const currentLead = ref(null);
+      const newLead = reactive({ name: '', whatsapp: '', course: '', source: '', stage: 'Novo', temperature: 'Morno', nextFollowUp: today(), nextTime: '09:00', nextType: 'WhatsApp', nextNote: '' });
+
+      function persist(){ save(leads.value); }
+
+      const filtered = computed(() => {
+        const q = search.value.trim().toLowerCase();
+        return leads.value.filter(l => {
+          if (filterStage.value && l.stage !== filterStage.value) return false;
+          if (filterTemp.value && l.temperature !== filterTemp.value) return false;
+          if (!q) return true;
+          return [l.name, l.whatsapp, l.course, l.source].join(' ').toLowerCase().includes(q);
+        });
+      });
+
+      const kpis = computed(() => {
+        const now = today();
+        return {
+          total: leads.value.length,
+          new: leads.value.filter(l => l.stage === 'Novo').length,
+          today: leads.value.filter(l => l.nextFollowUp === now && l.status !== 'concluído').length,
+          late: leads.value.filter(l => l.nextFollowUp < now && l.status !== 'concluído').length,
+          hot: leads.value.filter(l => l.temperature === 'Quente').length,
+          converted: leads.value.filter(l => l.stage === 'Matriculado').length,
+        };
+      });
+
+      const agenda = computed(() => {
+        const now = today();
+        const active = leads.value.filter(l => l.status !== 'concluído');
+        return {
+          late: active.filter(l => l.nextFollowUp < now).sort((a,b) => a.nextFollowUp.localeCompare(b.nextFollowUp)),
+          today: active.filter(l => l.nextFollowUp === now).sort((a,b) => a.nextTime.localeCompare(b.nextTime)),
+          upcoming: active.filter(l => l.nextFollowUp > now).sort((a,b) => a.nextFollowUp.localeCompare(b.nextFollowUp)),
+        };
+      });
+
+      function byStage(stage){ return leads.value.filter(l => l.stage === stage).length; }
+
+      function formatDate(v){ if (!v) return '—'; return v; }
+
+      function openLead(lead){ currentLead.value = JSON.parse(JSON.stringify(lead)); leadModal.value = true; }
+      function closeLead(){ if (currentLead.value){ const idx = leads.value.findIndex(l => l.id === currentLead.value.id); if (idx >= 0){ leads.value[idx] = currentLead.value; persist(); } } leadModal.value = false; currentLead.value = null; }
+
+      function saveLead(){ closeLead(); }
+
+      function openCreate(){ createModal.value = true; }
+      function closeCreate(){ createModal.value = false; Object.assign(newLead, { name: '', whatsapp: '', course: '', source: '', stage: 'Novo', temperature: 'Morno', nextFollowUp: today(), nextTime: '09:00', nextType: 'WhatsApp', nextNote: '' }); }
+      function createLead(){
+        const lead = {
+          id: uid(), name: newLead.name, whatsapp: newLead.whatsapp, course: newLead.course, source: newLead.source,
+          createdAt: today(), lastContact: today(), nextFollowUp: newLead.nextFollowUp, nextTime: newLead.nextTime, nextType: newLead.nextType, nextNote: newLead.nextNote,
+          temperature: newLead.temperature, stage: newLead.stage, status: 'ativo',
+          history: [{ id: uid(), date: today(), type: 'Lead criado', note: 'Criado por Clara no painel' }]
+        };
+        leads.value.unshift(lead);
+        persist();
+        closeCreate();
+      }
+
+      function logContact(type){
+        if (!currentLead.value) return;
+        const note = prompt(`Registrar ${type}:`, '') || `${type} registrado`;
+        currentLead.value.history.push({ id: uid(), date: today(), type, note });
+        currentLead.value.lastContact = today();
+        persist();
+      }
+
+      function advanceStage(){
+        if (!currentLead.value) return;
+        const idx = stages.indexOf(currentLead.value.stage);
+        if (idx < stages.length - 1){ currentLead.value.stage = stages[idx + 1]; persist(); }
+      }
+
+      return {
+        search, filterStage, filterTemp, leadModal, createModal, currentLead, newLead, stages, filtered, kpis, agenda, byStage,
+        openLead, closeLead, saveLead, openCreate, closeCreate, createLead, logContact, advanceStage, formatDate,
+      };
+    }
+  }).mount('#app');
+</script>
+</body>
+</html>
