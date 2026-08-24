@@ -23,7 +23,6 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-  /* NOISE LAYER */
   .noise {
     position: fixed;
     inset: 0;
@@ -100,7 +99,7 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
-  .preview {
+  .thumb {
     margin-top: 6px;
     border: 1px solid rgba(255,255,255,0.10);
     border-radius: 12px;
@@ -109,24 +108,12 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+    aspect-ratio: 16 / 9;
   }
-  .preview-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 12px;
-    background: rgba(255,255,255,0.06);
-    border-bottom: 1px solid rgba(255,255,255,0.10);
-  }
-  .dot {
-    width: 10px; height: 10px; border-radius: 999px;
-    background: rgba(255,255,255,0.18);
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
-  }
-  .preview-frame {
+  .thumb img {
     width: 100%;
-    height: 220px;
-    border: none;
+    height: 100%;
+    object-fit: contain;
     display: block;
     background: #0b1220;
   }
@@ -147,7 +134,6 @@
   .open:hover { background: rgba(34,211,238,0.18); border-color: rgba(34,211,238,0.45); }
   @media (max-width: 760px) {
     .grid { grid-template-columns: 1fr; }
-    .preview-frame { height: 200px; }
   }
 </style>
 </head>
@@ -164,13 +150,8 @@
         <div class="desc">{{ item.desc }}</div>
         <div class="link">{{ item.link }}</div>
         <span class="badge">{{ item.badge }}</span>
-        <div class="preview">
-          <div class="preview-bar">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-          </div>
-          <iframe class="preview-frame" :src="item.href" :title="'Preview ' + item.name" loading="lazy"></iframe>
+        <div class="thumb">
+          <img :src="item.thumb" :alt="item.name + ' thumbnail'" loading="lazy" />
         </div>
         <div class="open">Abrir página completa ↗</div>
       </a>
@@ -189,6 +170,7 @@
           desc: 'Protocolos, scripts, objeções e follow-up',
           link: 'flavio-guedes.github.io/epq/playbookatendimento.html',
           href: 'https://flavio-guedes.github.io/epq/playbookatendimento.html',
+          thumb: 'thumbnails/thumb-atendimento.png',
           badge: 'Atendimento',
         },
         {
@@ -196,6 +178,7 @@
           desc: 'Jornada do lead à matrícula',
           link: 'flavio-guedes.github.io/epq/fluxocomercial.html',
           href: 'https://flavio-guedes.github.io/epq/fluxocomercial.html',
+          thumb: 'thumbnails/thumb-comercial.png',
           badge: 'Comercial',
         },
         {
@@ -203,11 +186,12 @@
           desc: 'Diretrizes, tom de voz e conteúdo',
           link: 'flavio-guedes.github.io/epq/playbookmkt.html',
           href: 'https://flavio-guedes.github.io/epq/playbookmkt.html',
+          thumb: 'thumbnails/thumb-marketing.png',
           badge: 'Marketing',
         },
       ]);
       onMounted(() => {
-        gsap.fromTo(cards.value, 
+        gsap.fromTo(cards.value,
           { opacity: 0, y: 24 },
           { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: 'power2.out', clearProps: 'transform' }
         );
