@@ -79,9 +79,9 @@
   .badge {
     display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid transparent;
   }
-  .badge.vaga { background: rgba(59,130,246,.15); color: #e8f1ff; border-color: rgba(59,130,246,.35); }
-  .badge.publicacao { background: rgba(16,185,129,.18); color: #ffffff; border-color: rgba(16,185,129,.45); }
-  .badge.hot { background: rgba(239,68,68,.15); color: #ffd8d4; border-color: rgba(239,68,68,.35); }
+  .badge.frio { background: rgba(148,163,184,.15); color: #e2e8f0; border-color: rgba(148,163,184,.35); }
+  .badge.morno { background: rgba(251,191,36,.15); color: #fef3c7; border-color: rgba(251,191,36,.35); }
+  .badge.quente { background: rgba(239,68,68,.15); color: #ffd8d4; border-color: rgba(239,68,68,.35); }
 
   .modal-backdrop {
     position: fixed; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 24px;
@@ -202,9 +202,7 @@
             <td><span class="badge" :class="lead.temperature.toLowerCase()">{{ lead.temperature }}</span></td>
             <td>{{ lead.stage }}</td>
             <td>{{ lead.status }}</td>
-            <td>
-              <button class="btn" @click="openLead(lead)">Abrir</button>
-            </td>
+            <td><button class="btn" @click="openLead(lead)">Abrir</button></td>
           </tr>
         </tbody>
       </table>
@@ -240,7 +238,6 @@
     </div>
   </section>
 
-  <!-- Lead modal -->
   <div class="modal-backdrop" v-if="leadModal" @click.self="closeLead">
     <div class="modal" v-if="currentLead">
       <h3>{{ currentLead.name }}</h3>
@@ -294,7 +291,6 @@
     </div>
   </div>
 
-  <!-- Create modal -->
   <div class="modal-backdrop" v-if="createModal" @click.self="closeCreate">
     <div class="modal">
       <h3>Novo Lead</h3>
@@ -346,17 +342,20 @@
   function load(){ try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; } catch { return []; } }
   function save(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
 
-  const seed = () => [
-    { id: uid(), name: 'Ronan Pontes', whatsapp: '5521976543210', course: 'PM — turma sábado', source: 'WhatsApp', createdAt: today(), lastContact: today(), nextFollowUp: today(), nextTime: '09:00', nextType: 'WhatsApp', nextNote: 'Confirmar turma da PM em Nilópolis', temperature: 'Quente', stage: 'Interessado', status: 'ativo', history: [{id: uid(), date: today(), type: 'Lead criado', note: 'Contato inicial via WhatsApp'}] },
-    { id: uid(), name: 'Ana Souza', whatsapp: '5521988776655', course: 'Marketing', source: 'Instagram', createdAt: today(), lastContact: today(), nextFollowUp: today(), nextTime: '14:00', nextType: 'Follow-up', nextNote: 'Enviar grade e valores', temperature: 'Morno', stage: 'Primeiro contato', status: 'ativo', history: [{id: uid(), date: today(), type: 'Lead criado', note: 'Chegou pelo perfil @epq.marketing'}] },
-    { id: uid(), name: 'Carlos Lima', whatsapp: '5521911223344', course: 'Design', source: 'Indicação', createdAt: today(), lastContact: today(), nextFollowUp: today(), nextTime: '16:00', nextType: 'Ligação', nextNote: 'Ligar para apresentar proposta', temperature: 'Frio', stage: 'Novo', status: 'ativo', history: [{id: uid(), date: today(), type: 'Lead criado', note: 'Indicação de um amigo'}] },
-    { id: uid(), name: 'Fernanda Dias', whatsapp: '5521933445566', course: 'Produto', source: 'LinkedIn', createdAt: today(), lastContact: today(), nextFollowUp: today(), nextTime: '11:00', nextType: 'WhatsApp', nextNote: 'Enviar case de produto', temperature: 'Quente', stage: 'Negociação', status: 'ativo', history: [{id: uid(), date: today(), type: 'Lead criado', note: 'Lead inbound via publicação'}] },
-    { id: uid(), name: 'Lucas Martins', whatsapp: '5521955667788', course: 'Conteúdo', source: 'Facebook', createdAt: today(), lastContact: today(), nextFollowUp: today(), nextTime: '19:00', nextType: 'Proposta', nextNote: 'Enviar proposta comercial', temperature: 'Morno', stage: 'Em conversa', status: 'ativo', history: [{id: uid(), date: today(), type: 'Lead criado', note: 'Lead do post do evento'}] },
+  const initial = [
+    {
+      id: uid(), name: 'Ronan Pontes', phone: '', email: '', whatsapp: '5521976543210', course: 'PM — turma sábado', source: 'WhatsApp',
+      createdAt: today(), lastContact: today(), nextFollowUp: today(), nextTime: '09:00', nextType: 'WhatsApp', nextNote: 'Confirmar turma da PM em Nilópolis',
+      temperature: 'Quente', stage: 'Interessado', status: 'ativo',
+      history: [
+        { id: uid(), date: today(), type: 'Lead criado', note: 'Contato inicial via WhatsApp: interesse na turma da PM de sábado em Nilópolis.' }
+      ]
+    }
   ];
 
   createApp({
     setup() {
-      const leads = ref(load().length ? load() : seed());
+      const leads = ref(load().length ? load() : initial);
       const search = ref('');
       const filterStage = ref('');
       const filterTemp = ref('');
@@ -400,19 +399,27 @@
       });
 
       function byStage(stage){ return leads.value.filter(l => l.stage === stage).length; }
-
-      function formatDate(v){ if (!v) return '—'; return v; }
+      function formatDate(v){ return v || '—'; }
 
       function openLead(lead){ currentLead.value = JSON.parse(JSON.stringify(lead)); leadModal.value = true; }
-      function closeLead(){ if (currentLead.value){ const idx = leads.value.findIndex(l => l.id === currentLead.value.id); if (idx >= 0){ leads.value[idx] = currentLead.value; persist(); } } leadModal.value = false; currentLead.value = null; }
+      function closeLead(){
+        if (currentLead.value){
+          const idx = leads.value.findIndex(l => l.id === currentLead.value.id);
+          if (idx >= 0){ leads.value[idx] = currentLead.value; persist(); }
+        }
+        leadModal.value = false; currentLead.value = null;
+      }
 
       function saveLead(){ closeLead(); }
 
       function openCreate(){ createModal.value = true; }
-      function closeCreate(){ createModal.value = false; Object.assign(newLead, { name: '', whatsapp: '', course: '', source: '', stage: 'Novo', temperature: 'Morno', nextFollowUp: today(), nextTime: '09:00', nextType: 'WhatsApp', nextNote: '' }); }
+      function closeCreate(){
+        createModal.value = false;
+        Object.assign(newLead, { name: '', whatsapp: '', course: '', source: '', stage: 'Novo', temperature: 'Morno', nextFollowUp: today(), nextTime: '09:00', nextType: 'WhatsApp', nextNote: '' });
+      }
       function createLead(){
         const lead = {
-          id: uid(), name: newLead.name, whatsapp: newLead.whatsapp, course: newLead.course, source: newLead.source,
+          id: uid(), name: newLead.name, phone: '', email: '', whatsapp: newLead.whatsapp, course: newLead.course, source: newLead.source,
           createdAt: today(), lastContact: today(), nextFollowUp: newLead.nextFollowUp, nextTime: newLead.nextTime, nextType: newLead.nextType, nextNote: newLead.nextNote,
           temperature: newLead.temperature, stage: newLead.stage, status: 'ativo',
           history: [{ id: uid(), date: today(), type: 'Lead criado', note: 'Criado por Clara no painel' }]
@@ -424,8 +431,7 @@
 
       function logContact(type){
         if (!currentLead.value) return;
-        const note = prompt(`Registrar ${type}:`, '') || `${type} registrado`;
-        currentLead.value.history.push({ id: uid(), date: today(), type, note });
+        currentLead.value.history.push({ id: uid(), date: today(), type, note: `${type} registrado` });
         currentLead.value.lastContact = today();
         persist();
       }
