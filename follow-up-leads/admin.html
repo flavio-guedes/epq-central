@@ -349,7 +349,7 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script>
   const { createApp, ref, computed, reactive } = Vue;
-  const API_BASE = 'http://127.0.0.1:5000';
+  const API_BASE = (location.protocol === 'https:' && location.hostname !== '127.0.0.1' && location.hostname !== 'localhost') ? '' : 'http://127.0.0.1:5000';
   const stages = ['Novo','Primeiro contato','Em conversa','Interessado','Negociação','Matriculado','Perdido'];
   function today(){ return new Date().toISOString().slice(0,10); }
 
