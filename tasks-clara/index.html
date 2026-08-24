@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EPQ · Tasks Clara</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: radial-gradient(1200px 700px at 10% -10%, rgba(56,189,248,0.12), transparent 60%), radial-gradient(1000px 600px at 110% 10%, rgba(99,102,241,0.12), transparent 55%), linear-gradient(180deg, #0b1220 0%, #0f1b33 100%);
+    color: #e6f3ff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .noise {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.07; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 220px 220px;
+  }
+  #app { position: relative; z-index: 1; }
+  .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+  header {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand img { height: 36px; width: 36px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.08); padding: 4px; }
+  h1 { font-size: 20px; letter-spacing: 0.2px; color: #ffffff; }
+  .sub { color: #7d9cbd; font-size: 13px; margin-top: 2px; }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 12px;
+    align-items: start;
+  }
+
+  .column {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 12px;
+    min-height: 220px;
+    transition: background .15s ease;
+  }
+  .column.drag-over { background: rgba(255,255,255,0.10); }
+  .column-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px;
+  }
+  .column-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: #ffffff; }
+  .count {
+    font-size: 11px; color: #7d9cbd; background: rgba(255,255,255,0.08); padding: 3px 8px; border-radius: 999px;
+  }
+  .cards { display: grid; gap: 10px; }
+
+  .card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 12px;
+    cursor: grab;
+    transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+  }
+  .card:hover { border-color: rgba(34,211,238,0.45); transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,0,0,0.25); }
+  .card.dragging { opacity: 0.85; cursor: grabbing; }
+  .card-title { font-size: 13px; font-weight: 600; color: #ffffff; margin-bottom: 6px; }
+  .card-meta { font-size: 12px; color: #7d9cbd; }
+  .card-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .btn-xs {
+    padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.08); color: #e6f3ff; cursor: pointer;
+  }
+  .btn-xs:hover { border-color: rgba(255,255,255,0.32); background: rgba(255,255,255,0.14); }
+  .btn-xs.danger { color: #fca5a5; border-color: rgba(252,165,165,0.28); }
+
+  .actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .btn {
+    border: 1px solid rgba(255,255,255,0.18); color: #e6f3ff; background: rgba(255,255,255,0.08); padding: 9px 12px; border-radius: 12px; font-size: 13px; cursor: pointer;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: background .15s ease, border-color .15s ease;
+  }
+  .btn:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.32); }
+  .btn.primary { background: rgba(34,211,238,0.18); border-color: rgba(34,211,238,0.45); color: #cffafe; }
+  .btn.primary:hover { background: rgba(34,211,238,0.28); border-color: rgba(34,211,238,0.65); }
+
+  .empty { color: #7d9cbd; font-size: 12px; }
+
+  @media (max-width: 1024px) {
+    .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div id="app" class="container">
+  <header>
+    <div class="brand">
+      <img src="https://flavio-guedes.github.io/epq-central/logo.jpg" alt="EPQ" />
+      <div>
+        <h1>Tasks · Clara</h1>
+        <div class="sub">Pipeline simples de follow-up e operação</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="btn-add">+ Nova tarefa</button>
+      <button class="btn" id="btn-clear-archive">Limpar arquivo</button>
+    </div>
+  </header>
+
+  <section class="board" id="board"></section>
+</div>
+
+<script>
+  const STORAGE_KEY = 'epq_tasks_clara_v1';
+  const COLUMNS = [
+    { id: 'default', title: 'Fila padrão' },
+    { id: 'waiting', title: 'Aguardando informações' },
+    { id: 'todo', title: 'A fazer' },
+    { id: 'doing', title: 'Fazendo' },
+    { id: 'approval', title: 'Em aprovação' },
+    { id: 'done', title: 'Concluído' },
+    { id: 'archive', title: 'Arquivo' },
+  ];
+
+  function today(){ return new Date().toISOString().slice(0,10); }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+  function load(){ try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : defaultTasks(); } catch { return defaultTasks(); } }
+  function save(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+  function escapeHtml(text){ const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+  function defaultTasks(){
+    return [
+      { id: uid(), column: 'default', title: 'Checar leads novos', description: 'Abrir follow-up de leads e checar novos', created: today() },
+      { id: uid(), column: 'default', title: 'Checar follow-ups atrasados', description: 'Agenda do follow-up: Atrasados > Hoje > Próximos', created: today() },
+      { id: uid(), column: 'waiting', title: 'Confirmar turma da PM em Nilópolis', description: 'Aguardar retorno do Ronan sobre sábado/horário', created: today() },
+      { id: uid(), column: 'todo', title: 'Enviar proposta para o lead X', description: 'Usar modelo de proposta EPQ', created: today() },
+      { id: uid(), column: 'doing', title: 'Registrar contato do dia', description: 'WhatsApp enviado + resultado', created: today() },
+      { id: uid(), column: 'approval', title: 'Revisar mensagem de prospecção', description: 'Validar copy e link do portfólio', created: today() },
+      { id: uid(), column: 'done', title: 'Atualizar relatório semanal', description: 'Preencher ações de segunda a sexta', created: today() },
+    ];
+  }
+
+  function createApp({ setup }){
+    const state = {
+      tasks: ref(load()),
+      drag: ref(null),
+    };
+
+    function persist(){ save(state.tasks.value); }
+
+    function byColumn(columnId){
+      return state.tasks.value.filter(t => t.column === columnId);
+    }
+
+    function addTask(){
+      const title = prompt('Título da tarefa:','') || '';
+      if (!title.trim()) return;
+      const description = prompt('Descrição (opcional):','') || '';
+      state.tasks.value.unshift({ id: uid(), column: 'default', title: title.trim(), description: description.trim(), created: today() });
+      persist();
+      render();
+    }
+
+    function removeTask(id){
+      if (!confirm('Remover esta tarefa?')) return;
+      state.tasks.value = state.tasks.value.filter(t => t.id !== id);
+      persist();
+      render();
+    }
+
+    function moveTask(id, targetColumn){
+      const task = state.tasks.value.find(t => t.id === id);
+      if (task){
+        task.column = targetColumn;
+        persist();
+        render();
+      }
+    }
+
+    function onDragStart(e, id){
+      state.drag.value = id;
+      e.dataTransfer.setData('text/plain', id);
+      e.target.classList.add('dragging');
+    }
+    function onDragEnd(e){
+      state.drag.value = null;
+      e.target.classList.remove('dragging');
+      document.querySelectorAll('.column').forEach(col => col.classList.remove('drag-over'));
+    }
+    function onDragOver(e, columnId){
+      e.preventDefault();
+      e.currentTarget.classList.add('drag-over');
+    }
+    function onDragLeave(e){
+      e.currentTarget.classList.remove('drag-over');
+    }
+    function onDrop(e, columnId){
+      e.preventDefault();
+      const id = e.dataTransfer.getData('text/plain') || state.drag.value;
+      if (id) moveTask(id, columnId);
+      e.currentTarget.classList.remove('drag-over');
+    }
+
+    function render(){
+      const board = document.getElementById('board');
+      board.innerHTML = COLUMNS.map(col => {
+        const items = byColumn(col.id);
+        return `
+          <div class="column" data-column="${col.id}"
+               ondragover="window.__taskApp.onDragOver(event, '${col.id}')"
+               ondragleave="window.__taskApp.onDragLeave(event)"
+               ondrop="window.__taskApp.onDrop(event, '${col.id}')">
+            <div class="column-header">
+              <div class="column-title">${escapeHtml(col.title)}</div>
+              <div class="count">${items.length}</div>
+            </div>
+            <div class="cards">
+              ${items.length ? items.map(task => `
+                <div class="card" draggable="true" data-id="${task.id}"
+                     ondragstart="window.__taskApp.onDragStart(event, '${task.id}')"
+                     ondragend="window.__taskApp.onDragEnd(event)">
+                  <div class="card-title">${escapeHtml(task.title)}</div>
+                  <div class="card-meta">${escapeHtml(task.description || '')}</div>
+                  <div class="card-meta" style="margin-top:6px;">Criada em ${escapeHtml(task.created)}</div>
+                  <div class="card-actions">
+                    <button class="btn-xs danger" data-remove="${task.id}">Remover</button>
+                  </div>
+                </div>
+              `).join('') : '<div class="empty">Sem tarefas</div>'}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      board.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', () => removeTask(btn.dataset.remove));
+      });
+    }
+
+    document.getElementById('btn-add').addEventListener('click', addTask);
+    document.getElementById('btn-clear-archive').addEventListener('click', () => {
+      const count = byColumn('archive').length;
+      if (!count) return;
+      if (!confirm(`Remover ${count} tarefa(s) do arquivo?`)) return;
+      state.tasks.value = state.tasks.value.filter(t => t.column !== 'archive');
+      persist();
+      render();
+    });
+
+    window.__taskApp = { onDragStart, onDragEnd, onDragOver, onDragLeave, onDrop };
+    render();
+    return state;
+  }
+
+  createApp({ setup() {} });
+</script>
+</body>
+</html>
