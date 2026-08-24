@@ -4,6 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>EPQ — Case Educação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
@@ -16,12 +21,32 @@
     color: #e6f3ff;
     padding: 24px;
     min-height: 100vh;
+    overflow-x: hidden;
   }
+  /* NOISE LAYER */
+  .noise {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.08;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 220px 220px;
+  }
+  .noise::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(34,211,238,0.08), transparent 55%);
+  }
+  #app { position: relative; z-index: 1; }
   .container { max-width: 1400px; margin: 0 auto; }
   h1 {
     font-size: 22px;
     margin-bottom: 6px;
     letter-spacing: 0.2px;
+    color: #ffffff;
   }
   .sub { color: #7d9cbd; font-size: 13px; margin-bottom: 22px; }
   .grid {
@@ -46,6 +71,7 @@
       0 10px 30px rgba(0,0,0,0.25),
       inset 0 1px 0 rgba(255,255,255,0.18);
     transition: transform .12s ease, border-color .2s ease, box-shadow .2s ease;
+    will-change: transform;
   }
   .card:hover {
     border-color: rgba(34,211,238,0.5);
@@ -126,75 +152,69 @@
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>EPQ · Case Educação</h1>
-  <div class="sub">Página unificada: atendimento, comercial e marketing, com preview e auditoria no portfolio.</div>
+<div class="noise"></div>
+<div id="app">
+  <div class="container">
+    <h1>EPQ · Case Educação</h1>
+    <div class="sub">Página unificada: atendimento, comercial e marketing.</div>
 
-  <div class="grid">
-    <a class="card" href="https://flavio-guedes.github.io/epq/playbookatendimento.html">
-      <div class="name">Playbook de Atendimento</div>
-      <div class="desc">Protocolos, scripts, objeções e follow-up</div>
-      <div class="link">flavio-guedes.github.io/epq/playbookatendimento.html</div>
-      <span class="badge">Atendimento</span>
-      <div class="preview">
-        <div class="preview-bar">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
+    <div class="grid">
+      <a class="card" v-for="item in items" :key="item.name" :href="item.href" ref="cards">
+        <div class="name">{{ item.name }}</div>
+        <div class="desc">{{ item.desc }}</div>
+        <div class="link">{{ item.link }}</div>
+        <span class="badge">{{ item.badge }}</span>
+        <div class="preview">
+          <div class="preview-bar">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+          <iframe class="preview-frame" :src="item.href" :title="'Preview ' + item.name" loading="lazy"></iframe>
         </div>
-        <iframe class="preview-frame" src="https://flavio-guedes.github.io/epq/playbookatendimento.html" title="Preview Playbook de Atendimento" loading="lazy"></iframe>
-      </div>
-      <div class="open">Abrir página completa ↗</div>
-    </a>
-
-    <a class="card" href="https://flavio-guedes.github.io/epq/fluxocomercial.html">
-      <div class="name">Fluxo Comercial</div>
-      <div class="desc">Jornada do lead à matrícula</div>
-      <div class="link">flavio-guedes.github.io/epq/fluxocomercial.html</div>
-      <span class="badge">Comercial</span>
-      <div class="preview">
-        <div class="preview-bar">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
-        </div>
-        <iframe class="preview-frame" src="https://flavio-guedes.github.io/epq/fluxocomercial.html" title="Preview Fluxo Comercial" loading="lazy"></iframe>
-      </div>
-      <div class="open">Abrir página completa ↗</div>
-    </a>
-
-    <a class="card" href="https://flavio-guedes.github.io/epq/playbookmkt.html">
-      <div class="name">Playbook Marketing</div>
-      <div class="desc">Diretrizes, tom de voz e conteúdo</div>
-      <div class="link">flavio-guedes.github.io/epq/playbookmkt.html</div>
-      <span class="badge">Marketing</span>
-      <div class="preview">
-        <div class="preview-bar">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
-        </div>
-        <iframe class="preview-frame" src="https://flavio-guedes.github.io/epq/playbookmkt.html" title="Preview Playbook Marketing" loading="lazy"></iframe>
-      </div>
-      <div class="open">Abrir página completa ↗</div>
-    </a>
-
-    <a class="card" href="https://flavio-guedes.github.io/portfolio/case_educacao.html">
-      <div class="name">Case Educação — Auditoria</div>
-      <div class="desc">Registro no portfolio com verificação da implementação</div>
-      <div class="link">flavio-guedes.github.io/portfolio/case_educacao.html</div>
-      <span class="badge">Portfolio</span>
-      <div class="preview">
-        <div class="preview-bar">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
-        </div>
-        <iframe class="preview-frame" src="https://flavio-guedes.github.io/portfolio/case_educacao.html" title="Preview Case Educação" loading="lazy"></iframe>
-      </div>
-      <div class="open">Abrir página completa ↗</div>
-    </a>
+        <div class="open">Abrir página completa ↗</div>
+      </a>
+    </div>
   </div>
 </div>
+
+<script>
+  const { createApp, ref, onMounted } = Vue;
+  createApp({
+    setup() {
+      const cards = ref([]);
+      const items = ref([
+        {
+          name: 'Playbook de Atendimento',
+          desc: 'Protocolos, scripts, objeções e follow-up',
+          link: 'flavio-guedes.github.io/epq/playbookatendimento.html',
+          href: 'https://flavio-guedes.github.io/epq/playbookatendimento.html',
+          badge: 'Atendimento',
+        },
+        {
+          name: 'Fluxo Comercial',
+          desc: 'Jornada do lead à matrícula',
+          link: 'flavio-guedes.github.io/epq/fluxocomercial.html',
+          href: 'https://flavio-guedes.github.io/epq/fluxocomercial.html',
+          badge: 'Comercial',
+        },
+        {
+          name: 'Playbook Marketing',
+          desc: 'Diretrizes, tom de voz e conteúdo',
+          link: 'flavio-guedes.github.io/epq/playbookmkt.html',
+          href: 'https://flavio-guedes.github.io/epq/playbookmkt.html',
+          badge: 'Marketing',
+        },
+      ]);
+      onMounted(() => {
+        gsap.fromTo(cards.value, 
+          { opacity: 0, y: 24 },
+          { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: 'power2.out', clearProps: 'transform' }
+        );
+      });
+      return { cards, items };
+    }
+  }).mount('#app');
+</script>
 </body>
 </html>
