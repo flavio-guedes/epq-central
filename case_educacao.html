@@ -6,50 +6,129 @@
 <title>EPQ — Case Educação</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
   body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f5f5f5;
-    color: #222;
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background:
+      radial-gradient(1200px 700px at 10% -10%, rgba(56,189,248,0.18), transparent 60%),
+      radial-gradient(1000px 600px at 110% 10%, rgba(99,102,241,0.18), transparent 55%),
+      linear-gradient(180deg, #0b1220 0%, #0f1b33 100%);
+    color: #e6f3ff;
     padding: 24px;
+    min-height: 100vh;
   }
-  .container { max-width: 1200px; margin: 0 auto; }
-  h1 { font-size: 22px; margin-bottom: 6px; }
-  .sub { color: #666; font-size: 13px; margin-bottom: 22px; }
+  .container { max-width: 1400px; margin: 0 auto; }
+  h1 {
+    font-size: 22px;
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+  }
+  .sub { color: #7d9cbd; font-size: 13px; margin-bottom: 22px; }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+    align-items: stretch;
   }
   .card {
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 16px;
     padding: 16px;
     text-decoration: none;
-    color: #222;
-    display: block;
-    transition: transform .08s ease, border-color .15s ease;
+    color: #e6f3ff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    box-shadow:
+      0 10px 30px rgba(0,0,0,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.18);
+    transition: transform .12s ease, border-color .2s ease, box-shadow .2s ease;
   }
-  .card:hover { border-color: #1e5fd6; transform: translateY(-1px); }
-  .card .name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-  .card .desc { font-size: 12px; color: #666; }
-  .card .link { font-size: 11px; color: #1e5fd6; margin-top: 10px; word-break: break-all; }
+  .card:hover {
+    border-color: rgba(34,211,238,0.5);
+    transform: translateY(-2px);
+    box-shadow:
+      0 14px 40px rgba(0,0,0,0.35),
+      0 0 0 1px rgba(34,211,238,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.22);
+  }
+  .card .name {
+    font-weight: 700;
+    font-size: 14px;
+    color: #ffffff;
+  }
+  .card .desc { font-size: 12px; color: #b6c9e2; }
+  .card .link { font-size: 11px; color: #7dd3fc; word-break: break-all; opacity: 0.9; }
   .badge {
     display: inline-block;
-    margin-top: 8px;
+    align-self: flex-start;
     font-size: 11px;
-    background: #eef2ff;
-    color: #1e3a8a;
-    padding: 4px 8px;
+    background: rgba(34,211,238,0.12);
+    color: #cffafe;
+    padding: 4px 10px;
     border-radius: 999px;
-    border: 1px solid #c7d2fe;
+    border: 1px solid rgba(34,211,238,0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .preview {
+    margin-top: 6px;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+  }
+  .preview-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+  }
+  .dot {
+    width: 10px; height: 10px; border-radius: 999px;
+    background: rgba(255,255,255,0.18);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
+  }
+  .preview-frame {
+    width: 100%;
+    height: 220px;
+    border: none;
+    display: block;
+    background: #0b1220;
+  }
+  .open {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #7dd3fc;
+    text-decoration: none;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(34,211,238,0.10);
+    border: 1px solid rgba(34,211,238,0.22);
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .open:hover { background: rgba(34,211,238,0.18); border-color: rgba(34,211,238,0.45); }
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr; }
+    .preview-frame { height: 200px; }
   }
 </style>
 </head>
 <body>
 <div class="container">
   <h1>EPQ · Case Educação</h1>
-  <div class="sub">Página unificada: atendimento, comercial e marketing, com auditoria no portfolio.</div>
+  <div class="sub">Página unificada: atendimento, comercial e marketing, com preview e auditoria no portfolio.</div>
 
   <div class="grid">
     <a class="card" href="https://flavio-guedes.github.io/epq/playbookatendimento.html">
@@ -57,6 +136,15 @@
       <div class="desc">Protocolos, scripts, objeções e follow-up</div>
       <div class="link">flavio-guedes.github.io/epq/playbookatendimento.html</div>
       <span class="badge">Atendimento</span>
+      <div class="preview">
+        <div class="preview-bar">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <iframe class="preview-frame" src="https://flavio-guedes.github.io/epq/playbookatendimento.html" title="Preview Playbook de Atendimento" loading="lazy"></iframe>
+      </div>
+      <div class="open">Abrir página completa ↗</div>
     </a>
 
     <a class="card" href="https://flavio-guedes.github.io/epq/fluxocomercial.html">
@@ -64,6 +152,15 @@
       <div class="desc">Jornada do lead à matrícula</div>
       <div class="link">flavio-guedes.github.io/epq/fluxocomercial.html</div>
       <span class="badge">Comercial</span>
+      <div class="preview">
+        <div class="preview-bar">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <iframe class="preview-frame" src="https://flavio-guedes.github.io/epq/fluxocomercial.html" title="Preview Fluxo Comercial" loading="lazy"></iframe>
+      </div>
+      <div class="open">Abrir página completa ↗</div>
     </a>
 
     <a class="card" href="https://flavio-guedes.github.io/epq/playbookmkt.html">
@@ -71,6 +168,15 @@
       <div class="desc">Diretrizes, tom de voz e conteúdo</div>
       <div class="link">flavio-guedes.github.io/epq/playbookmkt.html</div>
       <span class="badge">Marketing</span>
+      <div class="preview">
+        <div class="preview-bar">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <iframe class="preview-frame" src="https://flavio-guedes.github.io/epq/playbookmkt.html" title="Preview Playbook Marketing" loading="lazy"></iframe>
+      </div>
+      <div class="open">Abrir página completa ↗</div>
     </a>
 
     <a class="card" href="https://flavio-guedes.github.io/portfolio/case_educacao.html">
@@ -78,6 +184,15 @@
       <div class="desc">Registro no portfolio com verificação da implementação</div>
       <div class="link">flavio-guedes.github.io/portfolio/case_educacao.html</div>
       <span class="badge">Portfolio</span>
+      <div class="preview">
+        <div class="preview-bar">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <iframe class="preview-frame" src="https://flavio-guedes.github.io/portfolio/case_educacao.html" title="Preview Case Educação" loading="lazy"></iframe>
+      </div>
+      <div class="open">Abrir página completa ↗</div>
     </a>
   </div>
 </div>
