@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>EPQ · Follow-up de Leads</title>
+<title>EPQ · Administração</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -102,14 +102,12 @@
   .timeline-item{display:flex;gap:12px;align-items:flex-start;padding:10px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10)}
   .timeline-meta{font-size:12px;color:#7d9cbd;min-width:120px}
   .timeline-body{font-size:13px;color:#e6f3ff}
-  .agenda{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
-  .agenda-col{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:14px;padding:12px}
-  .agenda-title{font-size:12px;color:#7d9cbd;text-transform:uppercase;letter-spacing:.14em;margin-bottom:10px}
-  .agenda-item{padding:10px;border-radius:12px;background:rgba(255,255,255,0.04);margin-bottom:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.10)}
-  .agenda-item:hover{border-color:rgba(34,211,238,0.4)}
-  .agenda-item .name{font-size:13px;color:#ffffff;font-weight:500}
-  .agenda-item .meta{font-size:12px;color:#7d9cbd;margin-top:4px}
-  @media (max-width:1024px){.kpis{grid-template-columns:repeat(3,1fr)}.funnel{grid-template-columns:repeat(4,1fr)}.agenda{grid-template-columns:1fr}}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .tab{
+    padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#e6f3ff;font-size:13px;cursor:pointer;
+  }
+  .tab.active{background:rgba(34,211,238,0.18);border-color:rgba(34,211,238,0.45);color:#cffafe}
+  @media (max-width:1024px){.kpis{grid-template-columns:repeat(3,1fr)}.funnel{grid-template-columns:repeat(4,1fr)}}
   @media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.funnel{grid-template-columns:repeat(3,1fr)}.row{grid-template-columns:1fr}}
 </style>
 </head>
@@ -120,22 +118,12 @@
     <div class="brand">
       <img src="https://flavio-guedes.github.io/epq-central/logo.jpg" alt="EPQ" />
       <div>
-        <h1>Follow-up de Leads</h1>
-        <div class="sub">Painel comercial EPQ</div>
+        <h1>Administração · CRM</h1>
+        <div class="sub">Visão gestão · Admin Master / Gestor</div>
       </div>
     </div>
     <div class="actions">
-      <input class="search" v-model="search" placeholder="Buscar nome, WhatsApp ou curso..." />
-      <select class="filter-select" v-model="filterStage">
-        <option value="">Todos os estágios</option>
-        <option v-for="s in stages" :key="s" :value="s">{{ s }}</option>
-      </select>
-      <select class="filter-select" v-model="filterTemp">
-        <option value="">Todas as temperaturas</option>
-        <option>Frio</option>
-        <option>Morno</option>
-        <option>Quente</option>
-      </select>
+      <input class="search" v-model="search" placeholder="Buscar leads..." />
       <button class="btn primary" @click="openCreate()">+ Novo Lead</button>
       <button class="btn" @click="logout()">Sair</button>
     </div>
@@ -153,76 +141,118 @@
   </section>
 
   <section class="panel">
-    <div class="funnel">
-      <div class="stage" v-for="stage in stages" :key="stage" @click="filterStage = stage">
-        <div class="name">{{ stage }}</div>
-        <div class="count">{{ byStage(stage) }}</div>
+    <div class="tabs">
+      <div class="tab" :class="{active:tab==='leads'}" @click="tab='leads'">Leads</div>
+      <div class="tab" :class="{active:tab==='funnel'}" @click="tab='funnel'">Funil</div>
+      <div class="tab" :class="{active:tab==='audit'}" @click="tab='audit'" v-if="isAdmin">Auditoria</div>
+      <div class="tab" :class="{active:tab==='users'}" @click="tab='users'" v-if="isAdmin">Usuários</div>
+    </div>
+
+    <div v-if="tab==='leads'">
+      <div class="funnel">
+        <div class="stage" v-for="stage in stages" :key="stage" @click="filterStage = stage">
+          <div class="name">{{ stage }}</div>
+          <div class="count">{{ byStage(stage) }}</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>WhatsApp</th>
+              <th>Curso/Turma</th>
+              <th>Origem</th>
+              <th>Entrada</th>
+              <th>Próximo follow-up</th>
+              <th>Temperatura</th>
+              <th>Etapa</th>
+              <th>Status</th>
+              <th>Responsável</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="lead in filtered" :key="lead.id">
+              <td><a href="#" @click.prevent="openLead(lead)" style="color:#7dd3fc;text-decoration:none;">{{ lead.name }}</a></td>
+              <td><a :href="'https://wa.me/' + lead.whatsapp" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;">{{ lead.whatsapp }}</a></td>
+              <td>{{ lead.course }}</td>
+              <td>{{ lead.source }}</td>
+              <td>{{ formatDate(lead.createdAt) }}</td>
+              <td>{{ formatDate(lead.nextFollowUp) }}</td>
+              <td><span class="badge" :class="lead.temperature.toLowerCase()">{{ lead.temperature }}</span></td>
+              <td>{{ lead.stage }}</td>
+              <td>{{ lead.status }}</td>
+              <td>{{ lead.ownerName || lead.ownerId }}</td>
+              <td><button class="btn" @click="openLead(lead)">Abrir</button></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-  </section>
 
-  <section class="panel">
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>WhatsApp</th>
-            <th>Curso/Turma</th>
-            <th>Origem</th>
-            <th>Entrada</th>
-            <th>Último contato</th>
-            <th>Próximo follow-up</th>
-            <th>Temperatura</th>
-            <th>Etapa</th>
-            <th>Status</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="lead in filtered" :key="lead.id">
-            <td><a href="#" @click.prevent="openLead(lead)" style="color:#7dd3fc;text-decoration:none;">{{ lead.name }}</a></td>
-            <td><a :href="'https://wa.me/' + lead.whatsapp" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;">{{ lead.whatsapp }}</a></td>
-            <td>{{ lead.course }}</td>
-            <td>{{ lead.source }}</td>
-            <td>{{ formatDate(lead.createdAt) }}</td>
-            <td>{{ formatDate(lead.lastContact) }}</td>
-            <td>{{ formatDate(lead.nextFollowUp) }}</td>
-            <td><span class="badge" :class="lead.temperature.toLowerCase()">{{ lead.temperature }}</span></td>
-            <td>{{ lead.stage }}</td>
-            <td>{{ lead.status }}</td>
-            <td><button class="btn" @click="openLead(lead)">Abrir</button></td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-if="tab==='funnel'">
+      <div class="funnel">
+        <div class="stage" v-for="stage in stages" :key="stage">
+          <div class="name">{{ stage }}</div>
+          <div class="count">{{ byStage(stage) }}</div>
+        </div>
+      </div>
     </div>
-  </section>
 
-  <section class="panel">
-    <div class="agenda">
-      <div class="agenda-col">
-        <div class="agenda-title">Atrasados</div>
-        <div class="agenda-item" v-for="lead in agenda.late" :key="lead.id" @click="openLead(lead)">
-          <div class="name">{{ lead.name }}</div>
-          <div class="meta">{{ lead.course }} · {{ formatDate(lead.nextFollowUp) }}</div>
-        </div>
-        <div v-if="!agenda.late.length" style="color:#7d9cbd;font-size:13px;">Nenhum</div>
+    <div v-if="tab==='audit' && isAdmin">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Usuário</th>
+              <th>Ação</th>
+              <th>Lead</th>
+              <th>Campo</th>
+              <th>Antes</th>
+              <th>Depois</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="log in audit" :key="log.id">
+              <td>{{ formatDateTime(log.created_at) }}</td>
+              <td>{{ log.user_id }}</td>
+              <td>{{ log.acao }}</td>
+              <td>{{ log.lead_id }}</td>
+              <td>{{ log.campo }}</td>
+              <td>{{ log.valor_anterior }}</td>
+              <td>{{ log.valor_novo }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="agenda-col">
-        <div class="agenda-title">Hoje</div>
-        <div class="agenda-item" v-for="lead in agenda.today" :key="lead.id" @click="openLead(lead)">
-          <div class="name">{{ lead.name }}</div>
-          <div class="meta">{{ lead.course }} · {{ formatDate(lead.nextFollowUp) }}</div>
-        </div>
-        <div v-if="!agenda.today.length" style="color:#7d9cbd;font-size:13px;">Nenhum</div>
-      </div>
-      <div class="agenda-col">
-        <div class="agenda-title">Próximos</div>
-        <div class="agenda-item" v-for="lead in agenda.upcoming" :key="lead.id" @click="openLead(lead)">
-          <div class="name">{{ lead.name }}</div>
-          <div class="meta">{{ lead.course }} · {{ formatDate(lead.nextFollowUp) }}</div>
-        </div>
-        <div v-if="!agenda.upcoming.length" style="color:#7d9cbd;font-size:13px;">Nenhum</div>
+    </div>
+
+    <div v-if="tab==='users' && isAdmin">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>E-mail</th>
+              <th>Perfil</th>
+              <th>Status</th>
+              <th>Criado em</th>
+              <th>Último acesso</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="u in users" :key="u.id">
+              <td>{{ u.nome }}</td>
+              <td>{{ u.email }}</td>
+              <td>{{ u.perfil }}</td>
+              <td>{{ u.status }}</td>
+              <td>{{ formatDate(u.created_at) }}</td>
+              <td>{{ formatDateTime(u.last_login) }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </section>
@@ -246,7 +276,6 @@
           </select>
         </div>
       </div>
-
       <div class="row" style="margin-top:10px;">
         <div><label>Próximo follow-up</label><input type="date" v-model="currentLead.nextFollowUp" /></div>
         <div><label>Hora</label><input type="time" v-model="currentLead.nextTime" /></div>
@@ -258,7 +287,6 @@
       </div>
       <label style="margin-top:10px;display:block;">Observação</label>
       <textarea v-model="currentLead.nextNote" placeholder="Descreva a próxima ação..."></textarea>
-
       <div class="actions" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn primary" @click="saveLead()">Salvar</button>
         <button class="btn" @click="logContact('WhatsApp')">Registrar WhatsApp</button>
@@ -267,7 +295,6 @@
         <button class="btn" @click="advanceStage()">Avançar etapa</button>
         <button class="btn" @click="closeLead">Fechar</button>
       </div>
-
       <div style="margin-top:18px;">
         <div style="font-size:12px;color:#7d9cbd;text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px;">Histórico</div>
         <div class="timeline">
@@ -333,7 +360,7 @@
   function userProfile(){
     try { return JSON.parse(localStorage.getItem('epq_crm_user')||'{}').perfil || ''; } catch { return ''; }
   }
-  function isOperational(){ return userProfile() === 'OPERACIONAL'; }
+  const isAdmin = computed(() => userProfile() === 'ADMIN_MASTER');
 
   async function api(path, options){
     const res = await fetch(API_BASE + path, { ...options, headers: { 'content-type':'application/json', ...authHeaders(), ...(options && options.headers ? options.headers : {}) } });
@@ -346,9 +373,11 @@
   createApp({
     setup(){
       const leads = ref([]);
+      const users = ref([]);
+      const audit = ref([]);
       const search = ref('');
       const filterStage = ref('');
-      const filterTemp = ref('');
+      const tab = ref('leads');
       const leadModal = ref(false);
       const createModal = ref(false);
       const currentLead = ref(null);
@@ -376,6 +405,8 @@
           temperature: l.temperatura || '',
           stage: l.etapa || '',
           status: l.status,
+          ownerId: l.responsavel_id,
+          ownerName: l.responsavel_id,
           history: [],
         };
       }
@@ -399,15 +430,13 @@
       const filtered = computed(()=>{
         const q = search.value.trim().toLowerCase();
         return leads.value.filter(l=>{
-          if (isOperational() && l.status === 'arquivado') return false;
           if (filterStage.value && l.stage !== filterStage.value) return false;
-          if (filterTemp.value && l.temperature !== filterTemp.value) return false;
           if (!q) return true;
           return [l.name, l.whatsapp, l.course, l.source].join(' ').toLowerCase().includes(q);
         });
       });
       const kpis = computed(()=>{
-        const list = isOperational() ? leads.value.filter(l=>l.status !== 'arquivado') : leads.value;
+        const list = leads.value;
         const now = today();
         return {
           total: list.length,
@@ -418,18 +447,10 @@
           converted: list.filter(l=>l.stage==='Matriculado').length,
         };
       });
-      const agenda = computed(()=>{
-        const active = leads.value.filter(l=>l.status !== 'arquivado');
-        const now = today();
-        return {
-          late: active.filter(l=>l.nextFollowUp && l.nextFollowUp<now).sort((a,b)=>a.nextFollowUp.localeCompare(b.nextFollowUp)),
-          today: active.filter(l=>l.nextFollowUp===now).sort((a,b)=> (a.nextTime||'').localeCompare(b.nextTime||'')),
-          upcoming: active.filter(l=>l.nextFollowUp && l.nextFollowUp>now).sort((a,b)=>a.nextFollowUp.localeCompare(b.nextFollowUp)),
-        };
-      });
 
       function byStage(stage){ return leads.value.filter(l=>l.stage===stage).length; }
       function formatDate(v){ return v || '—'; }
+      function formatDateTime(v){ return v ? v.replace('T',' ').slice(0,19) : '—'; }
 
       async function openLead(lead){
         const full = await api('/leads/' + lead.id);
@@ -438,11 +459,7 @@
         currentLead.value = loaded;
         leadModal.value = true;
       }
-      function closeLead(){
-        leadModal.value = false;
-        currentLead.value = null;
-      }
-
+      function closeLead(){ leadModal.value = false; currentLead.value = null; }
       async function saveLead(){
         if (!currentLead.value) return;
         await api('/leads/' + currentLead.value.id, { method:'PUT', body: JSON.stringify(toApiPayload(currentLead.value)) });
@@ -480,21 +497,30 @@
         window.location.href = 'login.html';
       }
 
+      async function loadAdmin(){
+        if (isAdmin.value){
+          try { users.value = await api('/users'); } catch { users.value = []; }
+          try { audit.value = await api('/audit'); } catch { audit.value = []; }
+        }
+      }
+
       async function init(){
         const token = localStorage.getItem('epq_crm_token');
         const user = localStorage.getItem('epq_crm_user');
         if (!token || !user){ window.location.href = 'login.html'; return; }
-        if (userProfile() === 'ADMIN_MASTER' || userProfile() === 'GESTOR'){
-          window.location.href = 'admin.html';
+        const perfil = userProfile();
+        if (perfil !== 'ADMIN_MASTER' && perfil !== 'GESTOR'){
+          window.location.href = 'index.html';
           return;
         }
         await load();
+        await loadAdmin();
       }
       init();
 
       return {
-        search, filterStage, filterTemp, leadModal, createModal, currentLead, newLead, stages, filtered, kpis, agenda, byStage,
-        openLead, closeLead, saveLead, openCreate, closeCreate, createLead, logContact, advanceStage, formatDate, logout,
+        search, filterStage, tab, leadModal, createModal, currentLead, newLead, stages, filtered, kpis, audit, users, byStage,
+        openLead, closeLead, saveLead, openCreate, closeCreate, createLead, logContact, advanceStage, formatDate, formatDateTime, logout, isAdmin,
       };
     }
   }).mount('#app');
