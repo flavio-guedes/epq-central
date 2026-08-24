@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: epq-crm
+    env: python
+    plan: free
+    runtime: python-3.11
+    buildCommand: pip install -r crm-backend/requirements.txt
+    startCommand: cd crm-backend && python3 flask_app.py
+    healthCheckPath: /health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///./crm.db
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      - key: FIRST_SUPERUSER
+        value: flavio
+      - key: FIRST_SUPERUSER_PASSWORD
+        value: EPQ@Admin#2026!
+    # Aviso: Render Free não garante persistência do SQLite entre deploys/desligamentos.
+    # Para produção, use plano pago + disco persistente ou migre para PostgreSQL.
