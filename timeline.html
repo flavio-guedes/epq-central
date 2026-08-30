@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EPQ · Timeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --white:#ffffff; --bg:#f6f8fb; --surface:#ffffff; --line:#e5eaf2; --line-blue:#cfe3ff;
+  --text:#141b26; --muted:#5a6677; --blue:#3b82f6; --blue-700:#2563eb; --blue-50:#eff6ff;
+  --mint:#10b981; --amber:#f59e0b; --red:#ef4444; --purple:#7c3aed;
+  --glass:rgba(255,255,255,.62); --glass-border:1px solid rgba(37,99,235,.14);
+  --shadow:0 10px 40px rgba(10,30,60,.07),0 2px 10px rgba(10,30,60,.04);
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+
+/* Header / Hero */
+.hero{position:relative;min-height:88svh;background:linear-gradient(180deg,#0b1220 0%,#0f1b30 55%,#14213d 100%);color:#fff;overflow:hidden;display:flex;align-items:flex-end;padding-bottom:36px}
+.hero-grid{position:absolute;inset:0;opacity:.55;background-image:linear-gradient(rgba(59,130,246,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.09) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 70% 70% at 55% 40%,black,transparent 80%)}
+.hero-grad{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 25% 30%,rgba(37,99,235,.22),transparent 60%),radial-gradient(ellipse 60% 50% at 85% 70%,rgba(11,49,85,.18),transparent 55%)}
+.hero-scan{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(147,197,253,.35),transparent);top:-10%;animation:scan 9s linear infinite;opacity:.7}
+@keyframes scan{0%{top:-10%}100%{top:110%}}
+.hero-content{position:relative;z-index:10;padding:0 64px;width:100%;max-width:960px}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:#93c5fd;letter-spacing:.22em;text-transform:uppercase;margin-bottom:14px}
+.hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(34px,5vw,60px);font-weight:700;letter-spacing:-.04em;line-height:1.02;margin-bottom:14px}
+.hero-title em{color:#60a5fa;font-style:normal}
+.hero-sub{font-size:15px;color:#c9d7ee;line-height:1.65;max-width:620px;margin-bottom:22px}
+.hero-meta{display:flex;gap:22px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);font-family:'JetBrains Mono',monospace;font-size:11px;color:#e5eeff;letter-spacing:.08em;text-transform:uppercase}
+.dot{width:7px;height:7px;background:#60a5fa;border-radius:50%;box-shadow:0 0 10px rgba(96,165,250,.5)}
+
+/* Layout comum */
+.container{max-width:1200px;margin:0 auto;padding:56px 64px 100px}
+.section{margin-bottom:84px;scroll-margin-top:24px}
+.rule{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.rule-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--blue);letter-spacing:.18em;text-transform:uppercase;white-space:nowrap}
+.rule-line{flex:1;height:1px;background:var(--line)}
+.section-title{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;letter-spacing:-.02em;margin:10px 0 10px}
+.section-lede{font-size:14px;color:var(--muted);line-height:1.7;max-width:720px;margin-bottom:26px}
+
+/* Métricas */
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+.metric{background:var(--surface);border:var(--glass-border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.metric-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:6px}
+.metric-value{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+.metric-value.dim{color:#6b7a90}
+.metric-sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* Timeline */
+.tl{position:relative;padding-left:64px}
+.tl::before{content:"";position:absolute;left:21px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--blue),#c7d2fe);opacity:.35}
+.tl-node{position:relative;margin-bottom:56px;opacity:.92}
+.tl-dot{position:absolute;left:-45px;top:10px;width:14px;height:14px;border-radius:50%;background:var(--blue);border:2px solid #fff;box-shadow:0 0 0 3px rgba(59,130,246,.18)}
+.tl-phase{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--blue);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.tl-period{font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b7a90;margin-bottom:6px}
+.tl-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px}
+.tl-body{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tl-card{background:var(--surface);border:var(--glass-border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.tl-card h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
+.tl-card p,.tl-card ul{font-size:13.5px;color:#374455}
+.tl-card ul{padding-left:16px}
+.tl-card li+li{margin-top:6px}
+.tl-embed{margin-top:14px;background:rgba(255,255,255,.6);border:var(--glass-border);border-radius:var(--radius);padding:12px;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* Before/After */
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.ba-side{padding:18px;border-radius:var(--radius);background:var(--surface);border:var(--glass-border);box-shadow:var(--shadow)}
+.ba-side h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px}
+.ba-side ul{padding-left:18px;color:#374455;font-size:13.5px}
+.ba-side li+li{margin-top:6px}
+
+/* Mapa */
+.network{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:14px}
+.node{padding:16px;border-radius:var(--radius);background:var(--surface);border:var(--glass-border);box-shadow:var(--shadow);font-weight:600;font-size:14px;color:var(--text);display:flex;align-items:center;gap:10px}
+.node::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--blue);box-shadow:0 0 10px rgba(59,130,246,.4)}
+
+/* Milestones */
+.ms{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory}
+.ms-chip{scroll-snap-align:start;flex:0 0 auto;padding:10px 14px;border-radius:999px;background:var(--surface);border:var(--glass-border);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--text);text-decoration:none;box-shadow:var(--shadow);white-space:nowrap}
+.ms-chip:hover{border-color:var(--blue)}
+
+/* Gallery */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.g-item{position:relative;border-radius:var(--radius);background:var(--surface);border:var(--glass-border);padding:14px;box-shadow:var(--shadow);min-height:110px}
+.g-tag{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;color:var(--blue);letter-spacing:.12em;margin-bottom:8px}
+
+/* Estado */
+.state{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
+.state-col{padding:14px;border-radius:var(--radius);background:var(--surface);border:var(--glass-border)}
+.state-col h3{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;margin-bottom:8px;color:var(--text)}
+.state-col ul{list-style:none;font-size:13px;color:#374455}
+.state-col li+li{margin-top:6px}
+.state-col li::before{content:"•";color:var(--blue);margin-right:8px}
+
+/* Current */
+.health{display:grid;grid-template-columns:repeat(5,minmax(140px,1fr));gap:14px}
+.h-card{background:var(--surface);border:var(--glass-border);padding:14px;border-radius:var(--radius)}
+.h-card h4{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:8px}
+.h-track{height:8px;background:rgba(10,30,60,.08);border-radius:999px;overflow:hidden}
+.h-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--blue),#818cf8);border-radius:999px;transition:width .6s ease}
+.h-label{font-size:11px;color:var(--muted);margin-top:6px}
+
+/* progress */
+.progress{position:fixed;top:0;right:0;z-index:60;width:10px;height:0;background:linear-gradient(180deg,#60a5fa,#7c3aed);border-radius:0 0 6px 6px;opacity:.9}
+.progress-track{position:fixed;top:0;right:0;z-index:59;width:10px;height:100vh;background:rgba(10,30,60,.06)}
+
+/* Responsivo */
+@media (max-width:920px){
+ .hero-content,.container{padding-left:24px;padding-right:24px}
+ .metrics,.state,.health{grid-template-columns:repeat(2,1fr)}
+ .tl-body,.ba{grid-template-columns:1fr}
+ .network{grid-template-columns:repeat(2,1fr)}
+ .gallery{grid-template-columns:1fr 1fr}
+ .tl{padding-left:36px}
+ .tl-dot{left:-33px}
+}
+@media (max-width:600px){
+ .metrics,.state,.health{grid-template-columns:1fr}
+ .gallery{grid-template-columns:1fr}
+ .network{grid-template-columns:1fr}
+ .hero-title{font-size:34px}
+}
+</style>
+
+<script>
+(function(){
+  try {
+    var key='epq-active-tab';
+    var tab=location.pathname.split('/').pop().replace(/\?.*$/,'').replace(/#.*$/,'');
+    if (tab) localStorage.setItem(key, tab);
+  } catch(e) {}
+})();
+</script>
+
+</head>
+<body>
+
+<div class="progress-track"></div>
+<div class="progress" id="scrollProgress"></div>
+
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-grad"></div>
+  <div class="hero-scan"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Case · EPQ · 2026</div>
+    <h1 class="hero-title">EPQ — <em>Evolution Timeline</em></h1>
+    <p class="hero-sub">De uma operação de marketing a um ecossistema integrado de estratégia, conteúdo, gestão e automação.</p>
+    <div class="hero-meta">
+      <span class="pill"><span class="dot"></span>Operacional</span>
+      <span class="pill">CASE</span>
+      <span class="pill">2026</span>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section class="section">
+    <div class="rule"><span class="rule-label">Indicadores</span><span class="rule-line"></span></div>
+    <h2 class="section-title">Evolução em números</h2>
+    <p class="section-lede">Visão consolidada do período e das estruturas construídas. Números ausentes seguem como “—”.</p>
+    <div class="metrics" id="metrics"></div>
+  </section>
+
+  <section class="section">
+    <div class="rule"><span class="rule-label">Milestones</span><span class="rule-line"></span></div>
+    <h2 class="section-title"> Marcos</h2>
+    <p class="section-lede">Acesse diretamente cada etapa da evolução.</p>
+    <div class="ms" id="milestones"></div>
+  </section>
+
+  <section class="section" id="timeline">
+    <div class="rule"><span class="rule-label">Timeline</span><span class="rule-line"></span></div>
+    <h2 class="section-title">Evolução do projeto</h2>
+    <p class="section-lede">Problema → Estratégia → Construção → Integração → Automação → Operação → Evolução</p>
+    <div class="tl" id="timelineRoot"></div>
+  </section>
+
+  <section class="section" id="before-after">
+    <div class="rule"><span class="rule-label">Before → After</span><span class="rule-line"></span></div>
+    <h2 class="section-title">Antes e depois</h2>
+    <div class="ba">
+      <div class="ba-side">
+        <h3>Antes</h3>
+        <ul>
+          <li>Processos dispersos entre conversas e arquivos.</li>
+          <li>Informações distribuídas sem estrutura única.</li>
+          <li>Baixa visibilidade de prazos e responsáveis.</li>
+          <li>Dependência de comunicação manual.</li>
+          <li>Pouca integração entre conteúdo, marketing e gestão.</li>
+        </ul>
+      </div>
+      <div class="ba-side">
+        <h3>Depois</h3>
+        <ul>
+          <li>Operação estruturada com painéis próprios.</li>
+          <li>Calendário e gestão de conteúdo integrados.</li>
+          <li>Kanban com status, prioridades e donos.</li>
+          <li>Planejamento de conteúdo e tráfego documentado.</li>
+          <li>Integração operacional e governança visíveis.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="rule"><span class="rule-label">Ecossistema</span><span class="rule-line"></span></div>
+    <h2 class="section-title">Mapa do ecossistema</h2>
+    <p class="section-lede">EPQ deixou de ser uma operação de marketing para funcionar como sistema digital integrado.</p>
+    <div class="network" id="network"></div>
+  </section>
+
+  <section class="section">
+    <div class="rule"><span class="rule-label">Entregas</span><span class="rule-line"></span></div>
+    <h2 class="section-title">Galeria de entregas</h2>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <section class="section">
+    <div class="rule"><span class="rule-label">Status</span><span class="rule-line"></span></div>
+    <h2 class="section-title">EPQ — Current state</h2>
+    <div class="state" id="state"></div>
+    <div class="health" style="margin-top:14px" id="health"></div>
+  </section>
+
+  <section class="section">
+    <div class="rule"><span class="rule-label">Cases</span><span class="rule-line"></span></div>
+    <h2 class="section-title">Case Educação</h2>
+    <p class="section-lede">Atendimento, comercial e marketing em uma visão unificada.</p>
+    <div class="grid">
+      <a class="card" href="https://flavio-guedes.github.io/epq/playbookatendimento.html">
+        <div class="name">Playbook de Atendimento</div>
+        <div class="desc">Protocolos, scripts, objeções e follow-up</div>
+        <div class="link">flavio-guedes.github.io/epq/playbookatendimento.html</div>
+        <span class="badge">Atendimento</span>
+        <div class="open">Abrir página completa ↗</div>
+      </a>
+      <a class="card" href="https://flavio-guedes.github.io/epq/fluxocomercial.html">
+        <div class="name">Fluxo Comercial</div>
+        <div class="desc">Jornada do lead à matrícula</div>
+        <div class="link">flavio-guedes.github.io/epq/fluxocomercial.html</div>
+        <span class="badge">Comercial</span>
+        <div class="open">Abrir página completa ↗</div>
+      </a>
+      <a class="card" href="https://flavio-guedes.github.io/epq/playbookmkt.html">
+        <div class="name">Playbook Marketing</div>
+        <div class="desc">Diretrizes, tom de voz e conteúdo</div>
+        <div class="link">flavio-guedes.github.io/epq/playbookmkt.html</div>
+        <span class="badge">Marketing</span>
+        <div class="open">Abrir página completa ↗</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="rule"><span class="rule-label">Próximo</span><span class="rule-line"></span></div>
+    <h2 class="section-title">What's next?</h2>
+    <p class="section-lede">Vetores de evolução confirmados no planejamento.</p>
+    <ul style="list-style:none;padding:0;display:grid;gap:10px">
+      <li style="display:flex;gap:10px;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--blue);flex:0 0 auto;margin-top:8px"></span><span>Integração mais forte entre conteúdo e CRM de leads.</span></li>
+      <li style="display:flex;gap:10px;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--blue);flex:0 0 auto;margin-top:8px"></span><span>Automação de fluxos operacionais e relatórios recorrentes.</span></li>
+      <li style="display:flex;gap:10px;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--blue);flex:0 0 auto;margin-top:8px"></span><span>Inteligência operacional baseada em dados reais.</span></li>
+      <li style="display:flex;gap:10px;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--blue);flex:0 0 auto;margin-top:8px"></span><span>Monitoramento contínuo de conteúdo, desempenho e leads.</span></li>
+      <li style="display:flex;gap:10px;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--blue);flex:0 0 auto;margin-top:8px"></span><span>Evolução gradual da camada de agentes e skills operacionais.</span></li>
+    </ul>
+    <p style="margin-top:18px;font-size:14px;color:#374455">“A evolução não termina na entrega. Ela continua na operação.”</p>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script>
+/* ===== Dados da timeline ===== */
+const timeline=[
+  {phase:"01",title:"Diagnóstico",period:"Início",status:"Concluído",problem:"Falta de clareza sobre como o projeto estava realmente operando.",decision:"Antes de construir, entender o todo.",deliveries:["Análise inicial do modelo EPQ","Levantamento de gargalos","Mapeamento de marketing, conteúdo e operação"],impact:"Base factual para decisões posteriores.",tools:["Documentos do repositório","Checkup","Auditoria"]},
+  {phase:"02",title:"Posicionamento & Estratégia",period:"—",status:"Concluído",problem:"Ausência de território editorial e de um funil explícito.",decision:"Criar posicionamento, proposta de valor e sistema de conteúdo.",deliveries:["Proposta de valor: estudar melhor, não mais","Território: “Erro comum de quem estuda para concurso”","Estratégia orgânico × tráfego","Funil Topo → Meio → Fundo"],impact:"Direcionamento claro de comunicação e conteúdo.",tools:["plano-conteudo-trafego.html","planoads.html"]},
+  {phase:"03",title:"Identidade & Direção Criativa",period:"—",status:"Concluído",problem:"Ausência de padronização visual e peças de campanha estruturadas.",decision:"Definir identidade visual, sistema de templates e peças.",deliveries:["Sistema visual EPQ","Templates para posts, carrosséis, stories, reels","Peças de campanha"],impact:"Identidade consistente e produção mais rápida.",tools:["Painel de Conteúdo","Playbook de Marketing"]},
+  {phase:"04",title:"Estruturação de Conteúdo",period:"21/08 → fim set/2026",status:"Concluído",problem:"Conteúdo sem calendário, rituais de produção ou status visível.",decision:"Criar fluxo editorial com etapas e responsáveis.",deliveries:["Planejamento editorial","Calendário e cronograma","Briefing → Produção → Revisão → Aprovação → Publicação"],impact:"Redução de retrabalho e previsibilidade.",tools:["painel-conteudo.html","cronograma.html"]},
+  {phase:"05",title:"Gestão Operacional",period:"—",status:"Concluído",problem:"Tarefas e responsários dispersos sem acompanhamento.",decision:"Criar painel próprio de gestão.",deliveries:["Painel de Gestão de Tarefas","Kanban com status","Acompanhamento por dono e prioridade"],impact:"Visibilidade operacional em tempo real.",tools:["tarefas.html"]},
+  {phase:"06",title:"Painel de Conteúdo",period:"—",status:"Concluído",problem:"Falta de visão consolidada de pautas e status.",decision:"Criar painel unificado de conteúdo.",deliveries:["Painel de Acompanhamento","Kanban e lista","Filtros por status e tema"],impact:"Acompanhamento editorial centralizado.",tools:["painel-conteudo.html"]},
+  {phase:"07",title:"Integração dos Sistemas",period:"—",status:"Concluído",problem:"Conteúdo e gestão operavam separados.",decision:"Integrar painéis e tornar conteúdo parte da operação.",deliveries:["Integração Painel Conteúdo + Tarefas","Vínculo por projeto/área","Manifesto de integração"],impact:"Operação integrada em vez de listas paralelas.",tools:["integration-manifest.json","painel-conteudo.html","tarefas.html"]},
+  {phase:"08",title:"Marketing & Performance",period:"—",status:"Em evolução",problem:"Planejamento de mídia sem estrutura de execução.",decision:"Estruturar plano de ads e jornada de atendimento.",deliveries:["Plano de Ads (R$200/semana)","Playbook de Marketing","Playbook de Atendimento"],impact:"Direcionamento operacional de mídia e conversão.",tools:["planoads.html","playbookmkt.html","playbookatendimento.html","plano-conteudo-trafego.html"]},
+  {phase:"09",title:"Organização do Ecossistema",period:"—",status:"Em evolução",problem:"Arquivos e assets sem estrutura de localização e reuso.",decision:"Criar organização por mês, editoria, formato e status.",deliveries:["Estrutura de pastas por mês e tema","Convenções de nomenclatura","Fluxo de arquivamento"],impact:"Escala e reaproveitamento com menos atrito.",tools:["painel-estrutura"]},
+  {phase:"10",title:"AI Operating System",period:"—",status:"Em implementação",problem:"Execução manual concentrada em pessoas.",decision:"Introduzir camada de agentes, skills e automação.",deliveries:["Arquitetura: Flávio → Atlas → Hermes → Agentes → Skills","Agentes especialistas por área","Monitoramento e relatórios automáticos"],impact:"Operação assistida por agentes com supervisão humana.",tools:["Hermes","Skills","Automações locais"]},
+  {phase:"11",title:"Governança",period:"—",status:"Em evolução",problem:"Falta de padrões, riscos e indicadores formais.",decision:"Criar camada de governança e QA operacional.",deliveries:["Padrões de qualidade","Checklists","Rastreabilidade e histórico"],impact:"Redução de retrabalho e aumento de consistência.",tools:["Auditoria","Checkup"]}
+];
+
+const metrics=[
+  {label:"Período",value:"—",sub:"Em validação"},
+  {label:"Sistemas",value:"07+",sub:"Painéis e estruturas"},
+  {label:"Frentes",value:"04",sub:"Creative · Growth · Ops · Governance"},
+  {label:"Base",value:"—",sub:"Dados não confirmados"}
+];
+
+const milestones=[
+  {id:"phase-01",label:"01 Diagnóstico"},
+  {id:"phase-02",label:"02 Estratégia"},
+  {id:"phase-03",label:"03 Identidade"},
+  {id:"phase-04",label:"04 Conteúdo"},
+  {id:"phase-05",label:"05 Gestão"},
+  {id:"phase-06",label:"06 Painel Conteúdo"},
+  {id:"phase-07",label:"07 Integração"},
+  {id:"phase-08",label:"08 Performance"},
+  {id:"phase-09",label:"09 Ecossistema"},
+  {id:"phase-10",label:"10 IA"},
+  {id:"phase-11",label:"11 Governança"}
+];
+
+const network=["Estratégia","Conteúdo","Design","Tráfego","Gestão","Equipe","Dados","Automação","IA","Governança"];
+
+const gallery=[
+  {tag:"BRAND", title:"Identidade EPQ", note:"Sistema visual e templates"},
+  {tag:"CONTENT", title:"Cronograma Editorial", note:"Agosto a setembro/2026"},
+  {tag:"CAMPAIGNS", title:"Plano de Ads", note:"R$200/semana"},
+  {tag:"DASHBOARDS", title:"Painel de Tarefas", note:"Kanban operacional"},
+  {tag:"OPERATIONS", title:"Painel de Conteúdo", note:"Status e produção"},
+  {tag:"AI", title:"AI Operating System", note:"Camada de agentes"}];
+
+const stateItems={
+  entregue:["Posicionamento e estratégia","Identidade e templates","Painel de Tarefas","Painel de Conteúdo","Integração documentada","Plano de Conteúdo + Tráfego"],
+  evolucao:["Marketing & Performance","Organização do ecossistema"],
+  implementacao:["AI Operating System"],
+  proximo:["Maior integração entre sistemas","Automação e relatórios","Evolução de agentes"]};
+
+const health=[
+  {label:"Conteúdo",w:68},{label:"Tarefas",w:72},{label:"Marketing",w:55},{label:"Automação",w:34},{label:"Governança",w:48}];
+
+/* Render */
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function renderMetrics(){
+  const el=$('metrics');
+  el.innerHTML=metrics.map(m=>`<div class="metric"><div class="metric-label">${esc(m.label)}</div><div class="metric-value">${esc(m.value)}</div><div class="metric-sub">${esc(m.sub)}</div></div>`).join('');
+}
+
+function renderMilestones(){
+  const el=$('milestones');
+  el.innerHTML=milestones.map(m=>`<a class="ms-chip" href="#${esc(m.id)}">${esc(m.label)}</a>`).join('');
+}
+
+function renderTimeline(){
+  const el=$('timelineRoot');
+  el.innerHTML=timeline.map((p,i)=>{
+    const id=`phase-${String(p.phase).padStart(2,'0')}`;
+    const tools=p.tools.map(t=>`<li>${esc(t)}</li>`).join('');
+    const deliveries=p.deliveries.map(d=>`<li>${esc(d)}</li>`).join('');
+    return `
+    <div class="tl-node" id="${esc(id)}">
+      <div class="tl-dot"></div>
+      <div class="tl-phase">Fase ${esc(p.phase)}</div>
+      <div class="tl-period">${esc(p.period)} · ${esc(p.status)}</div>
+      <div class="tl-title">${esc(p.title)}</div>
+      <div class="tl-body">
+        <div class="tl-card">
+          <h4>Problema</h4>
+          <p>${esc(p.problem)}</p>
+          <h4 style="margin-top:10px">Decisão</h4>
+          <p>${esc(p.decision)}</p>
+        </div>
+        <div class="tl-card">
+          <h4>Entregas</h4>
+          <ul>${deliveries}</ul>
+          <h4 style="margin-top:10px">Impacto</h4>
+          <p>${esc(p.impact)}</p>
+        </div>
+      </div>
+      <div class="tl-embed">Ferramentas/entregas vinculadas:<ul style="margin-top:6px">${tools}</ul></div>
+    </div>`;
+  }).join('');
+}
+
+function renderNetwork(){
+  $('network').innerHTML=network.map(n=>`<div class="node">${esc(n)}</div>`).join('');
+}
+
+function renderGallery(){
+  $('gallery').innerHTML=gallery.map(g=>`<div class="g-item"><div class="g-tag">${esc(g.tag)}</div><div style="font-weight:700">${esc(g.title)}</div><div style="color:var(--muted);font-size:13px;margin-top:6px">${esc(g.note)}</div></div>`).join('');
+}
+
+function renderState(){
+  const map={entregue:"Entregue",evolucao:"Em evolução",implementacao:"Em implementação",proximo:"Próximo"};
+  $('state').innerHTML=Object.entries(stateItems).map(([k,v])=>{
+    return `<div class="state-col"><h3>${map[k]||k}</h3><ul>${v.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;
+  }).join('');
+}
+
+function renderHealth(){
+  const fill=(item)=>{
+    const pct=Math.max(0,Math.min(100,item.w||0));
+    return `<div><div class="h-track"><div class="h-fill" data-w="${pct}"></div></div><div class="h-label">${esc(item.label)} · ${pct}%</div></div>`;
+  };
+  $('health').innerHTML=health.map(fill).join('');
+}
+
+/* Animações leves com GSAP */
+function initAnimations(){
+  gsap.registerPlugin(ScrollTrigger);
+  document.querySelectorAll('.tl-node').forEach((node,i)=>{
+    gsap.fromTo(node,{opacity:0,y:36},{opacity:1,y:0,duration:.7,ease:'power2.out',scrollTrigger:{trigger:node,start:'top 82%'},delay:(i%3)*.04});
+  });
+  document.querySelectorAll('.metric').forEach((m,i)=>{
+    gsap.fromTo(m,{opacity:0,y:14},{opacity:1,y:0,duration:.5,ease:'power2.out',scrollTrigger:{trigger:m,start:'top 88%'},delay:i*.06});
+  });
+  document.querySelectorAll('.state-col,.h-card,.g-item,.node').forEach((m,i)=>{
+    gsap.fromTo(m,{opacity:0},{opacity:1,duration:.55,ease:'power2.out',scrollTrigger:{trigger:m,start:'top 90%'},delay:(i%5)*.04});
+  });
+  ScrollTrigger.refresh();
+}
+
+function initCounters(){
+  const observer=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const bars=entry.target.querySelectorAll('.h-fill');
+        bars.forEach(b=>{b.style.width=(b.getAttribute('data-w')||0)+'%'});
+      }
+    });
+  },{threshold:.2});
+  const h=document.getElementById('health');
+  if(h) observer.observe(h);
+}
+
+function initProgress(){
+  const bar=document.getElementById('scrollProgress');
+  window.addEventListener('scroll',()=>{
+    const top=window.scrollY;
+    const h=document.documentElement.scrollHeight-window.innerHeight||1;
+    const pct=Math.min(100,Math.max(0,(top/h)*100));
+    bar.style.height=pct+'%';
+  },{passive:true});
+}
+
+function init(){
+  renderMetrics();
+  renderMilestones();
+  renderTimeline();
+  renderNetwork();
+  renderGallery();
+  renderState();
+  renderHealth();
+  initProgress();
+  initCounters();
+  if(window.gsap && window.ScrollTrigger) initAnimations();
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+</script>
+</body>
+</html>
