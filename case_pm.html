@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EPQ — Case PM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background:
+      radial-gradient(1200px 700px at 10% -10%, rgba(56,189,248,0.18), transparent 60%),
+      radial-gradient(1000px 600px at 110% 10%, rgba(99,102,241,0.18), transparent 55%),
+      linear-gradient(180deg, #0b1220 0%, #0f1b33 100%);
+    color: #e6f3ff;
+    padding: 24px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .noise {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.08;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 220px 220px;
+  }
+  .noise::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(34,211,238,0.08), transparent 55%);
+  }
+  #app { position: relative; z-index: 1; }
+  .container { max-width: 1400px; margin: 0 auto; }
+  h1 {
+    font-size: 22px;
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+    color: #ffffff;
+  }
+  .sub { color: #7d9cbd; font-size: 13px; margin-bottom: 22px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    align-items: stretch;
+  }
+  @media (max-width: 980px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 16px;
+    padding: 16px;
+    text-decoration: none;
+    color: #e6f3ff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    box-shadow:
+      0 10px 30px rgba(0,0,0,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.18);
+    transition: transform .12s ease, border-color .2s ease, box-shadow .2s ease;
+    will-change: transform;
+  }
+  .card:hover {
+    border-color: rgba(34,211,238,0.5);
+    transform: translateY(-2px);
+    box-shadow:
+      0 14px 40px rgba(0,0,0,0.35),
+      0 0 0 1px rgba(34,211,238,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.22);
+  }
+  .card .name {
+    font-weight: 700;
+    font-size: 14px;
+    color: #ffffff;
+  }
+  .card .desc { font-size: 12px; color: #b6c9e2; }
+  .card .link { font-size: 11px; color: #7dd3fc; word-break: break-all; opacity: 0.9; }
+  .badge {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 11px;
+    background: rgba(34,211,238,0.12);
+    color: #cffafe;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(34,211,238,0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .thumb {
+    margin-top: 6px;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+    aspect-ratio: 16 / 9;
+  }
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    background: #0b1220;
+  }
+  .open {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #7dd3fc;
+    text-decoration: none;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(34,211,238,0.10);
+    border: 1px solid rgba(34,211,238,0.22);
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .open:hover { background: rgba(34,211,238,0.18); border-color: rgba(34,211,238,0.45); }
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div id="app">
+  <div class="container">
+    <h1>EPQ · Case PM</h1>
+    <div class="sub">Product Discovery, Growth e operação orientada por dados.</div>
+
+    <div class="grid">
+      <a class="card" v-for="item in items" :key="item.name" :href="item.href" ref="cards">
+        <div class="name">{{ item.name }}</div>
+        <div class="desc">{{ item.desc }}</div>
+        <div class="link">{{ item.link }}</div>
+        <span class="badge">{{ item.badge }}</span>
+        <div class="thumb">
+          <img :src="item.thumb" :alt="item.name + ' thumbnail'" loading="lazy" />
+        </div>
+        <div class="open">Abrir página completa ↗</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const { createApp, ref, onMounted } = Vue;
+  createApp({
+    setup() {
+      const cards = ref([]);
+      const items = ref([
+        {
+          name: 'Diagnóstico e Jornada',
+          desc: 'Mapeamento do funil, pontos de atrito e fontes de leads',
+          link: 'flavio-guedes.github.io/epq/fluxocomercial.html',
+          href: 'https://flavio-guedes.github.io/epq/fluxocomercial.html',
+          thumb: 'data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"360\" viewBox=\"0 0 640 360\"><rect width=\"640\" height=\"360\" fill=\"#182338\"/><rect x=\"180\" y=\"80\" width=\"280\" height=\"200\" rx=\"16\" fill=\"rgba(56,189,248,0.10)\" stroke=\"rgba(56,189,248,0.35)\" stroke-width=\"1.5\"/><circle cx=\"260\" cy=\"160\" r=\"28\" fill=\"rgba(99,102,241,0.18)\" stroke=\"rgba(99,102,241,0.55)\" stroke-width=\"1.5\"/><circle cx=\"340\" cy=\"220\" r=\"24\" fill=\"rgba(34,211,238,0.18)\" stroke=\"rgba(34,211,238,0.55)\" stroke-width=\"1.5\"/><polyline points=\"220,160 260,140 300,170 340,150 380,190\" fill=\"none\" stroke=\"#cffafe\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>',
+          badge: 'Discovery',
+        },
+        {
+          name: 'Playbook Comercial',
+          desc: 'Objeções, scripts e estruturação do atendimento',
+          link: 'flavio-guedes.github.io/epq/playbookatendimento.html',
+          href: 'https://flavio-guedes.github.io/epq/playbookatendimento.html',
+          thumb: 'data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"360\" viewBox=\"0 0 640 360\"><rect width=\"640\" height=\"360\" fill=\"#182338\"/><rect x=\"160\" y=\"70\" width=\"320\" height=\"220\" rx=\"16\" fill=\"rgba(99,102,241,0.10)\" stroke=\"rgba(99,102,241,0.35)\" stroke-width=\"1.5\"/><rect x=\"200\" y=\"110\" width=\"240\" height=\"18\" rx=\"6\" fill=\"rgba(226,232,240,0.12)\"/><rect x=\"200\" y=\"148\" width=\"180\" height=\"14\" rx=\"6\" fill=\"rgba(226,232,240,0.08)\"/><rect x=\"200\" y=\"182\" width=\"220\" height=\"14\" rx=\"6\" fill=\"rgba(226,232,240,0.08)\"/><rect x=\"200\" y=\"216\" width=\"160\" height=\"14\" rx=\"6\" fill=\"rgba(226,232,240,0.08)\"/><circle cx=\"560\" cy=\"60\" r=\"26\" fill=\"rgba(232,163,61,0.18)\" stroke=\"rgba(232,163,61,0.6)\" stroke-width=\"1.5\"/><text x=\"560\" y=\"67\" text-anchor=\"middle\" fill=\"#E8A33D\" font-family=\"Inter,sans-serif\" font-size=\"18\" font-weight=\"700\">🎯</text></svg>',
+          badge: 'Comercial',
+        },
+        {
+          name: 'Diretrizes e Mensagens',
+          desc: 'Tom de voz, peças e alinhamento entre marketing e produto',
+          link: 'flavio-guedes.github.io/epq/playbookmkt.html',
+          href: 'https://flavio-guedes.github.io/epq/playbookmkt.html',
+          thumb: 'data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"360\" viewBox=\"0 0 640 360\"><rect width=\"640\" height=\"360\" fill=\"#182338\"/><rect x=\"140\" y=\"90\" width=\"360\" height=\"180\" rx=\"16\" fill=\"rgba(34,211,238,0.10)\" stroke=\"rgba(34,211,238,0.35)\" stroke-width=\"1.5\"/><polyline points=\"220,180 250,140 290,170 340,120 390,160 440,100\" fill=\"none\" stroke=\"#cffafe\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"540\" cy=\"70\" r=\"28\" fill=\"rgba(56,189,248,0.18)\" stroke=\"rgba(56,189,248,0.6)\" stroke-width=\"1.5\"/><text x=\"540\" y=\"77\" text-anchor=\"middle\" fill=\"#38BDF8\" font-family=\"Inter,sans-serif\" font-size=\"18\" font-weight=\"700\">📈</text></svg>',
+          badge: 'Marketing',
+        },
+        {
+          name: 'Relatório de Aprendizados',
+          desc: 'Métricas, objeções e ações orientadas por dados',
+          link: 'flavio-guedes.github.io/epq/leads.html',
+          href: 'https://flavio-guedes.github.io/epq/leads.html',
+          thumb: 'data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"360\" viewBox=\"0 0 640 360\"><rect width=\"640\" height=\"360\" fill=\"#182338\"/><rect x=\"200\" y=\"80\" width=\"240\" height=\"200\" rx=\"16\" fill=\"rgba(232,163,61,0.10)\" stroke=\"rgba(232,163,61,0.35)\" stroke-width=\"1.5\"/><polyline points=\"240,210 270,170 310,190 350,140 390,160 420,120\" fill=\"none\" stroke=\"#cffafe\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"560\" cy=\"60\" r=\"24\" fill=\"rgba(232,163,61,0.18)\" stroke=\"rgba(232,163,61,0.6)\" stroke-width=\"1.5\"/><text x=\"560\" y=\"67\" text-anchor=\"middle\" fill=\"#E8A33D\" font-family=\"Inter,sans-serif\" font-size=\"20\" font-weight=\"700\">📊</text></svg>',
+          badge: 'Dados',
+        },
+      ]);
+      onMounted(() => {
+        gsap.fromTo(cards.value,
+          { opacity: 0, y: 24 },
+          { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: 'power2.out', clearProps: 'transform' }
+        );
+      });
+      return { cards, items };
+    }
+  }).mount('#app');
+</script>
+</body>
+</html>
