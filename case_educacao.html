@@ -50,9 +50,15 @@
   .sub { color: #7d9cbd; font-size: 13px; margin-bottom: 22px; }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 18px;
     align-items: stretch;
+  }
+  @media (max-width: 980px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
   }
   .card {
     background: rgba(255,255,255,0.08);
@@ -114,6 +120,7 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+    object-position: center;
     display: block;
     background: #0b1220;
   }
@@ -194,7 +201,7 @@
           desc: 'Inteligência comercial, funil, objeções e ações por lead',
           link: 'flavio-guedes.github.io/epq/leads.html',
           href: 'https://flavio-guedes.github.io/epq/leads.html',
-          thumb: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><rect width="640" height="360" fill="#182338"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#cffafe" font-family="Inter,sans-serif" font-size="24" font-weight="700">Relatório de Leads</text></svg>',
+          thumb: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360"><rect width="640" height="360" fill="#182338"/><rect x="220" y="90" width="200" height="180" rx="16" fill="rgba(34,211,238,0.10)" stroke="rgba(34,211,238,0.35)" stroke-width="1.5"/><polyline points="270,210 290,170 310,190 330,140 350,160 370,110" fill="none" stroke="#cffafe" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="580" cy="60" r="24" fill="rgba(232,163,61,0.18)" stroke="rgba(232,163,61,0.6)" stroke-width="1.5"/><text x="580" y="67" text-anchor="middle" fill="#E8A33D" font-family="Inter,sans-serif" font-size="20" font-weight="700">📊</text></svg>',
           badge: 'Comercial',
         },
       ]);
